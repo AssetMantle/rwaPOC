@@ -1,0 +1,15 @@
+@import views.wallet.companion.SendCoin
+@import views.html.base.form._
+@import utilities.MicroNumber
+
+@(sendCoin: Form[SendCoin.Data] = SendCoin.form, balance: MicroNumber)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+
+@commonForm(constants.Form.SEND_COIN, sendCoin) {
+    @commonInputText(sendCoin, constants.FormField.TO_ADDRESS)
+    <div class="sendCoinAmountField">
+        <div id="availableBalance" class="availableBalance" onclick="setAvailableBalance('@constants.FormField.SEND_COIN_AMOUNT.name',@balance)">@Messages(constants.View.SEND_COIN_AVAILABLE_BALANCE, balance)</div>
+        @commonInputMicroNumber(sendCoin, constants.FormField.SEND_COIN_AMOUNT)
+    </div>
+    @commonInputPassword(sendCoin, constants.FormField.PASSWORD)
+}
+<script src="@utilities.PublicResource.getVersionedRoute("javascripts/blockchainTransactions/sendCoin.js")" type="text/javascript"></script>

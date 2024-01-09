@@ -1,0 +1,11 @@
+@import views.html.base.form._
+@import views.nft.companion.Transfer
+
+@(transferForm: Form[Transfer.Data] = Transfer.form, nftId: String)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+
+@commonForm(constants.Form.NFT_TRANSFER, transferForm) {
+    @commonInputText(transferForm, constants.FormField.NFT_ID, Symbol("value") -> nftId, Symbol("containerDivClass") -> "hidden", Symbol("readonly") -> "readonly")
+    @commonInputText(transferForm, constants.FormField.TO_ACCOUNT_ID)
+    @commonInputLong(transferForm, constants.FormField.NFT_TRANSFER_AMOUNT)
+    @commonInputPassword(transferForm, constants.FormField.PASSWORD)
+}
