@@ -2,7 +2,6 @@ package controllers
 
 import controllers.actions._
 import exceptions.BaseException
-import models.analytics.CollectionsAnalysis
 import models.blockchain.Split
 import models.master._
 import models.masterTransaction.SecondaryMarketSellTransaction
@@ -28,18 +27,14 @@ class SecondaryMarketController @Inject()(
                                            withLoginAction: WithLoginAction,
                                            withLoginActionAsync: WithLoginActionAsync,
                                            withoutLoginAction: WithoutLoginAction,
-                                           collectionsAnalysis: CollectionsAnalysis,
                                            blockchainBalances: blockchain.Balances,
                                            blockchainSplits: blockchain.Splits,
                                            masterAccounts: master.Accounts,
                                            masterKeys: master.Keys,
                                            masterWishLists: master.WishLists,
-                                           masterCollections: master.Collections,
                                            masterNFTs: master.NFTs,
                                            masterSecondaryMarkets: master.SecondaryMarkets,
                                            masterNFTOwners: master.NFTOwners,
-                                           masterNFTProperties: master.NFTProperties,
-                                           masterTransactionTokenPrices: masterTransaction.TokenPrices,
                                            secondaryMarketSellTxs: masterTransaction.SecondaryMarketSellTransactions,
                                            secondaryMarketBuyTxs: masterTransaction.SecondaryMarketBuyTransactions,
                                            masterTransactionCancelOrderTransactions: masterTransaction.CancelOrderTransactions,
@@ -52,76 +47,26 @@ class SecondaryMarketController @Inject()(
 
   implicit val module: String = constants.Module.SECONDARY_MARKET_CONTROLLER
 
-  implicit val callbackOnSessionTimeout: Call = routes.SecondaryMarketController.viewCollections()
+  implicit val callbackOnSessionTimeout: Call = routes.SecondaryMarketController.view()
 
-  def viewCollections(): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
+  def view(): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
     withoutLoginActionAsync { implicit loginState =>
       implicit request =>
-        Future(Ok(views.html.secondaryMarket.viewCollections()))
+        Future(Ok(views.html.secondaryMarket.view()))
     }
   }
 
-  def collectionsSection(): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
+  def marketNFTs(): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
     withoutLoginActionAsync { implicit loginState =>
       implicit request =>
-        val totalCollections = masterCollections.Service.totalOnSecondaryMarket
-        (for {
-          totalCollections <- totalCollections
-        } yield Ok(views.html.secondaryMarket.collectionsSection(totalCollections))
-          ).recover {
-          case baseException: BaseException => BadRequest(baseException.failure.message)
-        }
+        Future(Ok(views.html.secondaryMarket.marketNFTs()))
     }
   }
 
-  def collectionsPerPage(pageNumber: Int): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit loginState =>
-      implicit request =>
-        val secondaryMarketCollections = if (pageNumber < 1) constants.Response.INVALID_PAGE_NUMBER.throwBaseException()
-        else masterCollections.Service.getSecondaryMarketByPageNumber(pageNumber)
-        (for {
-          secondaryMarketCollections <- secondaryMarketCollections
-        } yield Ok(views.html.secondaryMarket.collectionsPerPage(secondaryMarketCollections))
-          ).recover {
-          case baseException: BaseException => InternalServerError(baseException.failure.message)
-        }
-    }
-  }
-
-  def viewCollection(id: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit loginState =>
-      implicit request =>
-        val collection = masterCollections.Service.tryGet(id)
-        (for {
-          collection <- collection
-        } yield Ok(views.html.secondaryMarket.viewCollection(collection))
-          ).recover {
-          case baseException: BaseException => InternalServerError(baseException.failure.message)
-        }
-    }
-  }
-
-  def collectionNFTs(id: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit loginState =>
-      implicit request =>
-        val collection = masterCollections.Service.tryGet(id)
-
-        (for {
-          collection <- collection
-        } yield Ok(views.html.secondaryMarket.collection.collectionNFTs(collection))
-          ).recover {
-          case baseException: BaseException => InternalServerError(baseException.failure.message)
-        }
-    }
-  }
-
-  def collectionNFTsPerPage(id: String, pageNumber: Int): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
+  def nftsPerPage(pageNumber: Int): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
     withoutLoginActionAsync { implicit optionalLoginState =>
       implicit request =>
-        val collection = if (pageNumber < 1) constants.Response.INVALID_PAGE_NUMBER.throwBaseException()
-        else masterCollections.Service.tryGet(id)
-        val secondaryMarkets = masterSecondaryMarkets.Service.getByCollectionId(id, pageNumber).map(_.sortBy(_.price))
-        val tokenPrice = masterTransactionTokenPrices.Service.getLatestPrice
+        val secondaryMarkets = masterSecondaryMarkets.Service.getByPageNumber(pageNumber).map(_.sortBy(_.price))
 
         def nfts(nftIds: Seq[String]) = masterNFTs.Service.getByIds(nftIds)
 
@@ -136,26 +81,10 @@ class SecondaryMarketController @Inject()(
         } else Future(Seq(), Seq())
 
         (for {
-          collection <- collection
           secondaryMarkets <- secondaryMarkets
           nfts <- nfts(secondaryMarkets.map(_.nftId))
           (nftOwners, likedNFTs) <- getOwnersAndLiked(secondaryMarkets.map(_.nftId))
-        } yield Ok(views.html.base.commonNFTsPerPage(collection, nfts, nftOwners, likedNFTs, Seq(), pageNumber, secondaryMarkets, showCreatorSection = false, tokenPrice = tokenPrice))
-          ).recover {
-          case baseException: BaseException => InternalServerError(baseException.failure.message)
-        }
-    }
-  }
-
-  def collectionTopRightCard(id: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit optionalLoginState =>
-      implicit request =>
-        val collectionAnalysis = collectionsAnalysis.Service.tryGet(id)
-        val collection = masterCollections.Service.tryGet(id)
-        (for {
-          collection <- collection
-          collectionAnalysis <- collectionAnalysis
-        } yield Ok(views.html.secondaryMarket.collection.topRightCard(collection, collectionAnalysis))
+        } yield Ok(views.html.base.commonNFTsPerPage(nfts, optionalLoginState.map(_.username), nftOwners, likedNFTs, Seq(), pageNumber, secondaryMarkets, showCreatorSection = false))
           ).recover {
           case baseException: BaseException => InternalServerError(baseException.failure.message)
         }
@@ -191,15 +120,11 @@ class SecondaryMarketController @Inject()(
           val nftOwner = masterNFTOwners.Service.tryGet(nftId = createData.nftId, ownerId = loginState.username)
           val activeKey = masterKeys.Service.tryGetActive(loginState.username)
 
-          def collection(id: String) = masterCollections.Service.tryGet(id)
-
-          def addToSecondaryMarket(nft: NFT, nftOwner: NFTOwner, collection: Collection, activeKey: Key) = {
+          def addToSecondaryMarket(nft: NFT, nftOwner: NFTOwner, activeKey: Key) = {
             val errors = Seq(
               if (!nft.isMinted.getOrElse(false)) Option(constants.Response.NFT_NOT_MINTED) else None,
               if (nftOwner.ownerId != loginState.username) Option(constants.Response.NOT_NFT_OWNER) else None,
               if (createData.sellQuantity > nftOwner.quantity) Option(constants.Response.NOT_ENOUGH_QUANTITY) else None,
-              if (nftOwner.saleId.isDefined || nftOwner.publicListingId.isDefined) Option(constants.Response.NFT_ALREADY_ON_SALE) else None,
-              if (!collection.public) Option(constants.Response.COLLECTION_NOT_PUBLIC) else None,
             ).flatten
             if (errors.isEmpty) {
               val secondaryMarketId = utilities.IdGenerator.getRandomHexadecimal
@@ -209,7 +134,7 @@ class SecondaryMarketController @Inject()(
                 abciInfo <- abciInfo
                 // This can throw failed to create failed to create SecondaryMarketSellTx due to unique order id constraint, key already exists only when node connected is not generating blocks
                 (tx, orderId) <- secondaryMarketSellTxs.Utility.transaction(secondaryMarketId = secondaryMarketId, nft = nft, nftOwner = nftOwner, fromAddress = loginState.address, quantity = createData.sellQuantity, endHours = createData.endHours, price = createData.price, gasPrice = constants.Transaction.DefaultGasPrice, ecKey = activeKey.getECKey(createData.password).get, latestHeight = abciInfo.result.response.last_block_height.toLong)
-                _ <- masterSecondaryMarkets.Service.add(createData.toNewSecondaryMarket(id = secondaryMarketId, collectionId = nftOwner.collectionId, sellerId = loginState.username, orderId = orderId.asString))
+                _ <- masterSecondaryMarkets.Service.add(createData.toNewSecondaryMarket(id = secondaryMarketId, sellerId = loginState.username, orderId = orderId.asString))
               } yield tx
             } else errors.head.throwBaseException()
           }
@@ -218,8 +143,7 @@ class SecondaryMarketController @Inject()(
             nft <- nft
             nftOwner <- nftOwner
             activeKey <- activeKey
-            collection <- collection(nftOwner.collectionId)
-            tx <- addToSecondaryMarket(nft = nft, nftOwner = nftOwner, collection = collection, activeKey = activeKey)
+            tx <- addToSecondaryMarket(nft = nft, nftOwner = nftOwner, activeKey = activeKey)
           } yield PartialContent(views.html.transactionSuccessful(tx))
             ).recover {
             case baseException: BaseException => try {
@@ -288,12 +212,9 @@ class SecondaryMarketController @Inject()(
     implicit request =>
       val secondaryMarket = masterSecondaryMarkets.Service.tryGet(secondaryMarketId)
 
-      def collection(id: String) = masterCollections.Service.tryGet(id)
-
       (for {
         secondaryMarket <- secondaryMarket
-        collection <- collection(secondaryMarket.collectionId)
-      } yield Ok(views.html.secondaryMarket.buy(secondaryMarket = secondaryMarket, collection = collection))
+      } yield Ok(views.html.secondaryMarket.buy(secondaryMarket = secondaryMarket))
         ).recover {
         case baseException: BaseException => BadRequest(baseException.failure.message)
       }
@@ -305,12 +226,9 @@ class SecondaryMarketController @Inject()(
         formWithErrors => {
           val secondaryMarket = masterSecondaryMarkets.Service.tryGet(formWithErrors.data.getOrElse(constants.FormField.SECONDARY_MARKET_ID.name, ""))
 
-          def collection(id: String) = masterCollections.Service.tryGet(id)
-
           (for {
             secondaryMarket <- secondaryMarket
-            collection <- collection(secondaryMarket.collectionId)
-          } yield BadRequest(views.html.secondaryMarket.buy(formWithErrors, secondaryMarket = secondaryMarket, collection = collection))
+          } yield BadRequest(views.html.secondaryMarket.buy(formWithErrors, secondaryMarket = secondaryMarket))
             ).recover {
             case _: BaseException => BadRequest
           }
@@ -321,16 +239,16 @@ class SecondaryMarketController @Inject()(
           val balance = blockchainBalances.Service.getTokenBalance(loginState.address)
           val split = blockchainSplits.Service.getByOwnerIDAndAssetID(ownerId = utilities.Identity.getMantlePlaceIdentityID(loginState.username), assetID = constants.Blockchain.StakingTokenAssetID)
 
-          def secondaryMarketSellTx(secondaryMarket: SecondaryMarket) = secondaryMarketSellTxs.Service.tryGetByNFTAndSecondaryMarketId(nftId = buyData.nftId, secondaryMarketId = secondaryMarket.id)
+          def nft(id: String) = masterNFTs.Service.tryGet(id)
 
-          def collection(secondaryMarket: SecondaryMarket) = masterCollections.Service.tryGet(secondaryMarket.collectionId)
+          def secondaryMarketSellTx(secondaryMarket: SecondaryMarket) = secondaryMarketSellTxs.Service.tryGetByNFTAndSecondaryMarketId(nftId = buyData.nftId, secondaryMarketId = secondaryMarket.id)
 
           def creatorAddress(accountId: String) = masterKeys.Service.tryGetActive(accountId).map(_.address)
 
           def checkAlreadySold(secondaryMarket: SecondaryMarket) = secondaryMarketBuyTxs.Utility.checkAlreadySold(nftId = buyData.nftId, secondaryMarket = secondaryMarket)
 
-          def validateAndTransfer(secondaryMarketSellTx: SecondaryMarketSellTransaction, verifyPassword: Boolean, secondaryMarket: SecondaryMarket, buyerKey: Key, balance: MicroNumber, split: Option[Split], collection: Collection, checkAlreadySold: Boolean, creatorAddress: String) = {
-            val royaltyFees = MicroNumber(collection.royalty * secondaryMarket.getTotal.toBigDecimal)
+          def validateAndTransfer(secondaryMarketSellTx: SecondaryMarketSellTransaction, verifyPassword: Boolean, secondaryMarket: SecondaryMarket, buyerKey: Key, balance: MicroNumber, split: Option[Split], checkAlreadySold: Boolean, creatorAddress: String) = {
+            val royaltyFees = MicroNumber(constants.Asset.Commission * secondaryMarket.getTotal.toBigDecimal)
             val errors = Seq(
               if (secondaryMarket.sellerId == loginState.username) Option(constants.Response.CANNOT_SELL_TO_YOURSELF) else None,
               if (balance == MicroNumber.zero || balance <= (secondaryMarket.getTotal - split.fold(MicroNumber.zero)(_.getBalanceAsMicroNumber) + royaltyFees)) Option(constants.Response.INSUFFICIENT_BALANCE) else None,
@@ -360,22 +278,19 @@ class SecondaryMarketController @Inject()(
             secondaryMarketSellTx <- secondaryMarketSellTx(secondaryMarket)
             balance <- balance
             split <- split
-            collection <- collection(secondaryMarket)
-            creatorAddress <- creatorAddress(collection.creatorId)
+            nft <- nft(secondaryMarket.nftId)
+            creatorAddress <- creatorAddress(nft.creatorId)
             checkAlreadySold <- checkAlreadySold(secondaryMarket)
-            blockchainTransaction <- validateAndTransfer(secondaryMarketSellTx = secondaryMarketSellTx, verifyPassword = verifyPassword, secondaryMarket = secondaryMarket, buyerKey = buyerKey, balance = balance, split = split, collection = collection, checkAlreadySold = checkAlreadySold, creatorAddress = creatorAddress)
+            blockchainTransaction <- validateAndTransfer(secondaryMarketSellTx = secondaryMarketSellTx, verifyPassword = verifyPassword, secondaryMarket = secondaryMarket, buyerKey = buyerKey, balance = balance, split = split, checkAlreadySold = checkAlreadySold, creatorAddress = creatorAddress)
           } yield PartialContent(views.html.transactionSuccessful(blockchainTransaction))
             ).recover {
             case baseException: BaseException => {
               val badResult = {
                 val secondaryMarket = masterSecondaryMarkets.Service.tryGet(buyData.secondaryMarketId)
 
-                def collection(id: String) = masterCollections.Service.tryGet(id)
-
                 (for {
                   secondaryMarket <- secondaryMarket
-                  collection <- collection(secondaryMarket.collectionId)
-                } yield BadRequest(views.html.secondaryMarket.buy(Buy.form.withGlobalError(baseException.failure.message), secondaryMarket, collection))
+                } yield BadRequest(views.html.secondaryMarket.buy(Buy.form.withGlobalError(baseException.failure.message), secondaryMarket))
                   ).recover {
                   case _: BaseException => BadRequest
                 }
@@ -394,92 +309,20 @@ class SecondaryMarketController @Inject()(
     }
   }
 
-  def listedCollectionPerPage(accountId: String, pageNumber: Int): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit optionalLoginState =>
-      implicit request =>
-        val collectionIDs = masterSecondaryMarkets.Service.getCollectionBySeller(accountId, pageNumber)
-        val total = masterSecondaryMarkets.Service.totalOnSellBySeller(accountId)
-
-        def collections(ids: Seq[String]) = masterCollections.Service.getCollections(ids)
-
-        (for {
-          collectionIDs <- collectionIDs
-          total <- total
-          collections <- collections(collectionIDs)
-        } yield Ok(views.html.profile.listed.collectionPerPage(accountId, collections, totalCollections = total))
-          ).recover {
-          case baseException: BaseException => InternalServerError(baseException.failure.message)
-        }
-    }
-  }
-
-  def listedCollectionCardInfo(collectionID: String, accountID: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
+  def listedNFTsPerPage(accountId: String, pageNumber: Int): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
     withoutLoginActionAsync { implicit loginState =>
       implicit request =>
-        val totalOnSell = masterSecondaryMarkets.Service.totalOnSellBySellerAndCollection(sellerId = accountID, collectionId = collectionID)
-
-        (for {
-          totalOnSell <- totalOnSell
-        } yield {
-          Ok(s"${totalOnSell.toString}|N/A")
-        }
-          ).recover {
-          case baseException: BaseException => BadRequest(baseException.failure.message)
-        }
-    }
-  }
-
-  def viewListedCollectionNFTs(accountId: String, collectionId: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit loginState =>
-      implicit request =>
-        Future(Ok(views.html.profile.listed.viewCollectionNFTs(accountId, collectionId)))
-    }
-  }
-
-  def listedSectionCollectionTopRightCard(collectionID: String, accountID: String): Action[AnyContent] = withoutLoginActionAsync { implicit optionalLoginState =>
-    implicit request =>
-      val totalOnSell = masterSecondaryMarkets.Service.totalOnSellBySellerAndCollection(sellerId = accountID, collectionId = collectionID)
-
-      (for {
-        totalListed <- totalOnSell
-      } yield Ok(views.html.profile.listed.topRightCard(totalListed = totalListed))
-        ).recover {
-        case baseException: BaseException => BadRequest(baseException.failure.message)
-      }
-  }
-
-  def listedCollectionNFTs(accountId: String, collectionId: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit loginState =>
-      implicit request =>
-        val collection = masterCollections.Service.tryGet(collectionId)
-
-        (for {
-          collection <- collection
-        } yield Ok(views.html.profile.listed.collectionNFTs(accountId, collection, collection.coverFileName))
-          ).recover {
-          case baseException: BaseException => InternalServerError(baseException.failure.message)
-        }
-    }
-  }
-
-  def listedCollectionNFTsPerPage(accountId: String, collectionId: String, pageNumber: Int): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginActionAsync { implicit loginState =>
-      implicit request =>
-        val collection = if (pageNumber < 1) constants.Response.INVALID_PAGE_NUMBER.throwBaseException()
-        else masterCollections.Service.tryGet(collectionId)
-        val secondaryMarkets = masterSecondaryMarkets.Service.getByCollectionSellerAndPageNumber(sellerId = accountId, collectionId = collectionId, pageNumber = pageNumber).map(_.sortBy(_.price))
-        val tokenPrice = masterTransactionTokenPrices.Service.getLatestPrice
+        val secondaryMarkets = masterSecondaryMarkets.Service.getBySellerAndPageNumber(sellerId = accountId, pageNumber = pageNumber).map(_.sortBy(_.price))
 
         def getNFTs(nftIds: Seq[String]) = masterNFTs.Service.getByIds(nftIds)
 
         def getNFTsLiked(nftIds: Seq[String]) = if (nftIds.nonEmpty) masterWishLists.Service.getByNFTIds(accountId = accountId, nftIDs = nftIds) else Future(Seq())
 
         (for {
-          collection <- collection
           secondaryMarkets <- secondaryMarkets
           nfts <- getNFTs(secondaryMarkets.map(_.nftId))
           nftsLiked <- getNFTsLiked(secondaryMarkets.map(_.nftId))
-        } yield Ok(views.html.base.commonNFTsPerPage(collection, nfts, Seq(), nftsLiked, Seq(), pageNumber, secondaryMarkets, showCreatorSection = false, tokenPrice = tokenPrice))
+        } yield Ok(views.html.base.commonNFTsPerPage(nfts, Option(accountId), Seq(), nftsLiked, Seq(), pageNumber, secondaryMarkets, showCreatorSection = false))
           ).recover {
           case baseException: BaseException => InternalServerError(baseException.failure.message)
         }

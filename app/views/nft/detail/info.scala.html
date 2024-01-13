@@ -4,7 +4,7 @@
 
 <div class="sticky-top item-sticky">
     <div class="card leftInfoCard">
-        <div class="title d-flex align-items-center justify-content-between">@nft.name
+        <div class="title d-flex align-items-center justify-content-between">@nft.address
         <span><a href="@nft.getExplorerUrl" target="_blank" class="p-0 lh-sm">
             <i class="bi bi-globe iconDefault"></i>
         </a></span>
@@ -28,7 +28,7 @@
                     <div class="nft-likes" data-id="@nft.id">00</div>
                 </div>
             } else {
-                <div class="d-flex align-items-center gap-2" onclick="getForm(@utilities.JsRoutes.getJsRouteString(constants.Form.SIGN_IN_WITH_CALLBACK.get, s"'/collection/${nft.collectionId}'"))">
+                <div class="d-flex align-items-center gap-2" onclick="getForm(@utilities.JsRoutes.getJsRouteString(constants.Form.SIGN_IN_WITH_CALLBACK.get, s"'/market'"))">
                     <span>
                     @views.html.nft.commonCardWishlistButton()
                     </span>

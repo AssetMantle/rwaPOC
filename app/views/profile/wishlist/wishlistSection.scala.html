@@ -2,15 +2,14 @@
 
 @(accountId: String)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: Option[LoginState])
 
-<div class="mt-2 mb-0 item item-center collectionContainer">
-    <div class="p-0 profile-card">
+<div class="item item-center nftContainer">
+    <div class="profile-card">
         <div class="profiles-container">
-
-            <div class="profile-list" id="art">
-                <div id="wishlistCollectionsPerPage" class="w-100 list grid-view-filter collectionsPerPage"></div>
-            </div>
-
-            <div class="loadMoreElement show">
+            <div class="nft-list">
+                <div class="nft-list-container">
+                    <div id="nftsPerPage" class="row m-0 nftsPerPage">
+                    </div>
+                </div>
                     <!-- Loader -->
                 <div class="loading">
                     <div class="ball"></div>
@@ -22,7 +21,12 @@
         </div>
     </div>
 </div>
-
-<script src="@utilities.PublicResource.getVersionedRoute("javascripts/profile/wishlist/loadMore.js")" type="text/javascript"></script>
-<script>loadFirstWishlistCollections('@accountId');</script>
-<script> window.onscroll = function() { loadWishlistCollectionOnScroll('@accountId'); } </script>
+<script src="@utilities.PublicResource.getVersionedRoute("javascripts/profile/wishlist/nftLoadMore.js")" type="text/javascript"></script>
+<script>
+     loadFirstWishlistNFTs('@accountId');
+     checkAndPushState(jsRoutes.controllers.WishlistController.viewCollectionNFTs('@accountId').url, ('@accountId' + '/WISHLIST/'), "wishListCollection");
+     window.onscroll = function () {
+         loadWishlistNftOnScroll('@{accountId}');
+     }
+     showLoader();
+</script>

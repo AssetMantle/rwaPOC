@@ -10,9 +10,8 @@
             @if(optionalLoginState.isDefined && optionalLoginState.fold("")(_.username) == accountId) {
                 @commonHorizontalSwitcher(
                     ListMap(
+                        constants.View.CREATED -> (routes.javascript.NFTController.createdSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.CREATED}')")),
                         constants.View.COLLECTED -> (routes.javascript.CollectedController.collectedSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.COLLECTED}')")),
-                        constants.View.CREATED -> (routes.javascript.CollectionController.createdSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.CREATED}')")),
-                        constants.View.WHITELIST -> (routes.javascript.WhitelistController.whitelistSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.WHITELIST}')")),
                         constants.View.WISHLIST -> (routes.javascript.WishlistController.wishlistSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.WISHLIST}')")),
                         constants.View.LISTED -> (routes.javascript.SecondaryMarketController.listedSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.LISTED}')")),
                         constants.View.TRANSACTIONS -> (routes.javascript.ProfileController.transactionsSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.TRANSACTIONS}')")),
@@ -27,7 +26,6 @@
                 @commonHorizontalSwitcher(
                     ListMap(
                         constants.View.COLLECTED -> (routes.javascript.CollectedController.collectedSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.COLLECTED}')")),
-                        constants.View.CREATED -> (routes.javascript.CollectionController.createdSection,  JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.CREATED}')")),
                         constants.View.WISHLIST -> (routes.javascript.WishlistController.wishlistSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.WISHLIST}')")),
                         constants.View.LISTED -> (routes.javascript.SecondaryMarketController.listedSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.LISTED}')")),
                     ),

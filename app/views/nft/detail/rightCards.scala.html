@@ -1,9 +1,8 @@
 @import controllers.actions.LoginState
-@import models.analytics.CollectionAnalysis
-@import models.master.{Collection, NFT, NFTOwner, SecondaryMarket}
+@import models.master.{NFT, NFTOwner, SecondaryMarket}
 @import views.html.base.buttons._
 
-@(collection: Collection, collectionAnalysis: CollectionAnalysis, nft: NFT, userNFTOwner: Option[NFTOwner], lowestPriceSecondaryMarket: Option[SecondaryMarket], userSecondaryMarket: Option[SecondaryMarket], tokenPrice: Double, totalOwners: Int)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, optionalLoginState: Option[LoginState])
+@(nft: NFT, userNFTOwner: Option[NFTOwner], lowestPriceSecondaryMarket: Option[SecondaryMarket], userSecondaryMarket: Option[SecondaryMarket], totalOwners: Int)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, optionalLoginState: Option[LoginState])
 
 <div class="d-flex flex-column gap-3 sticky-top item-sticky">
     <div class="sticky-top item-sticky">
@@ -14,7 +13,7 @@
             </div>
             <div class="d-flex flex-column gap-1 mt-2">
                 <div class="analysisTitle">@Messages(constants.View.COLLECTION_ROYALTY_FEES)</div>
-                <div class="analysisValue">@(collection.royalty * 100) %</div>
+                <div class="analysisValue">@(constants.Asset.Commission * 100) %</div>
             </div>
             <div class="separator"></div>
             @if(nft.totalSupply == 1) {
@@ -35,7 +34,7 @@
                             <div class="d-flex gap-1 align-items-center flex-wrap">
                                 <div class="nft-mantle-price">@utilities.NumericOperation.formatNumber(userSecondaryMarket.get.price) @Messages(constants.View.NFT_SALE_TOKEN_UNITS)</div>
                                 <div class="nft-dollar-price">
-                                    (@utilities.NumericOperation.formatNumber(userSecondaryMarket.get.price * tokenPrice) $)</div>
+                                    (@utilities.NumericOperation.formatNumber(userSecondaryMarket.get.price) $)</div>
                             </div>
                         </div>
                         @commonPrimaryButton(Messages(constants.View.CANCEL_ORDER), JavaScript(s"getForm(jsRoutes.controllers.SecondaryMarketController.cancelForm('${nft.id}', '${userSecondaryMarket.get.id}'))"), Symbol("class") -> "mt-4")
@@ -48,7 +47,7 @@
                             <div class="d-flex gap-1 align-items-center flex-wrap">
                                 <div class="nft-mantle-price">@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price) @Messages(constants.View.NFT_SALE_TOKEN_UNITS)</div>
                                 <div class="nft-dollar-price">
-                                    (@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price * tokenPrice) $)</div>
+                                    (@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price) $)</div>
                             </div>
                         </div>
                         @commonPrimaryButton(Messages(constants.View.BUYNOW), JavaScript(s"getForm(jsRoutes.controllers.SecondaryMarketController.buyForm('${lowestPriceSecondaryMarket.get.id}'))"), Symbol("class") -> "mt-4")
@@ -62,10 +61,10 @@
                             <div class="d-flex gap-1 align-items-center flex-wrap">
                                 <div class="nft-mantle-price">@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price) @Messages(constants.View.NFT_SALE_TOKEN_UNITS)</div>
                                 <div class="nft-dollar-price">
-                                    (@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price * tokenPrice) $)</div>
+                                    (@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price) $)</div>
                             </div>
                         </div>
-                        @commonPrimaryButton(Messages(constants.View.BUYNOW), JavaScript(s"getForm(jsRoutes.controllers.AccountController.signInWithCallbackForm('/market/${collection.id}'))"), Symbol("class") -> "mt-4")
+                        @commonPrimaryButton(Messages(constants.View.BUYNOW), JavaScript(s"getForm(jsRoutes.controllers.AccountController.signInWithCallbackForm('/market'))"), Symbol("class") -> "mt-4")
                     } else {
                         <div class="analysisValue">@Messages(constants.View.NOT_LISTED_ON_SECONDARY_MARKET)</div>
                     }
@@ -96,7 +95,7 @@
                         <div class="d-flex gap-1 align-items-center flex-wrap">
                             <div class="nft-mantle-price">@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price) @Messages(constants.View.NFT_SALE_TOKEN_UNITS) per Unit</div>
                             <div class="nft-dollar-price">
-                                (@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price * tokenPrice) $)</div>
+                                (@utilities.NumericOperation.formatNumber(lowestPriceSecondaryMarket.get.price) $)</div>
                         </div>
                     </div>
                     @commonPrimaryButton(Messages(constants.View.BUYNOW), JavaScript(s"getForm(jsRoutes.controllers.SecondaryMarketController.buyForm('${lowestPriceSecondaryMarket.get.id}'))"), Symbol("class") -> "mt-4")
@@ -110,7 +109,7 @@
                         <div class="d-flex gap-1 align-items-center flex-wrap">
                             <div class="nft-mantle-price">@utilities.NumericOperation.formatNumber(userSecondaryMarket.get.price) @Messages(constants.View.NFT_SALE_TOKEN_UNITS) per Unit</div>
                             <div class="nft-dollar-price">
-                                (@utilities.NumericOperation.formatNumber(userSecondaryMarket.get.price * tokenPrice) $)</div>
+                                (@utilities.NumericOperation.formatNumber(userSecondaryMarket.get.price) $)</div>
                         </div>
                     </div>
                     @commonPrimaryButton(Messages(constants.View.CANCEL_ORDER), JavaScript(s"getForm(jsRoutes.controllers.SecondaryMarketController.cancelForm('${nft.id}', '${userSecondaryMarket.get.id}'))"), Symbol("class") -> "mt-4")

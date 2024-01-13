@@ -1,37 +1,49 @@
-@import views.html.base.form._
-@import views.nft.companion.NFTBasicDetail
 @import models.masterTransaction.NFTDraft
+@import views.html.base.form._
 @import views.html.base.modal._
+@import views.nft.companion.NFTBasicDetail
 
-@(nftBasicDetailForm: Form[NFTBasicDetail.Data] = NFTBasicDetail.form, collectionId: String, nftId: String, optionalNFTDraft: Option[NFTDraft])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+@(nftBasicDetailForm: Form[NFTBasicDetail.Data] = NFTBasicDetail.form, nftId: String, optionalNFTDraft: Option[NFTDraft])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 
-@commonForm(constants.Form.NFT_BASIC_DETAIL, nftBasicDetailForm, submitDisable = !(optionalNFTDraft.isDefined && optionalNFTDraft.get.name.isDefined)) {
-    @multiStepNavigator(Seq(Messages(constants.View.NFT_STEPPER_FILE),Messages(constants.View.COLLECTION_STEPPER_BASIC_INFORMATION), Messages(constants.View.COLLECTION_STEPPER_PROPERTIES)), defaultSelected = 1)
-    @if(optionalNFTDraft.isDefined && optionalNFTDraft.get.name.isDefined && optionalNFTDraft.get.description.isDefined) {
-        @commonInputText(nftBasicDetailForm, constants.FormField.NFT_NAME, Symbol("value") -> optionalNFTDraft.get.name.get)
-        @commonDescriptionText(nftBasicDetailForm, constants.FormField.NFT_DESCRIPTION, Symbol("value") -> optionalNFTDraft.get.description.get)
-    } else {
-        @commonInputText(nftBasicDetailForm, constants.FormField.NFT_NAME)
-        @commonDescriptionText(nftBasicDetailForm, constants.FormField.NFT_DESCRIPTION)
+    @commonForm(constants.Form.NFT_BASIC_DETAIL, nftBasicDetailForm, submitDisable = !(optionalNFTDraft.isDefined && optionalNFTDraft.get.properties.isDefined)) {
+        @multiStepNavigator(Seq(Messages(constants.View.NFT_STEPPER_FILE), Messages(constants.View.COLLECTION_STEPPER_BASIC_INFORMATION)), defaultSelected = 1)
+        @if(optionalNFTDraft.isDefined && optionalNFTDraft.get.properties.isDefined) {
+            @commonInputText(nftBasicDetailForm, constants.FormField.REGISTRATION_ID, Symbol("value") -> optionalNFTDraft.get.getRegistrationId)
+            @commonDescriptionText(nftBasicDetailForm, constants.FormField.NFT_DESCRIPTION, Symbol("value") -> optionalNFTDraft.get.getDescription)
+            @commonInputText(nftBasicDetailForm, constants.FormField.ADDRESS, Symbol("value") -> optionalNFTDraft.get.getAddress)
+            @commonInputText(nftBasicDetailForm, constants.FormField.POSTAL_CODE, Symbol("value") -> optionalNFTDraft.get.getPostalCode)
+            @commonInputBigDecimal(nftBasicDetailForm, constants.FormField.TOTAL_AREA, Symbol("value") -> optionalNFTDraft.get.getTotalArea)
+            @commonInputText(nftBasicDetailForm, constants.FormField.GEO_LOCATION, Symbol("value") -> optionalNFTDraft.get.getGeoLocation)
+            @commonInputText(nftBasicDetailForm, constants.FormField.SECRET_VALUE, Symbol("value") -> optionalNFTDraft.get.getSecretValue)
+            @commonInputLong(nftBasicDetailForm, constants.FormField.TOTAL_UNITS, Symbol("value") -> optionalNFTDraft.get.getSupply)
+            @commonToggleButton(nftBasicDetailForm, constants.FormField.RENTED)
+            @commonInputBigDecimal(nftBasicDetailForm, constants.FormField.RENTAL_AMOUNT, Symbol("value") -> optionalNFTDraft.get.getRentalAmt)
+            @commonInputInt(nftBasicDetailForm, constants.FormField.RENT_PERIOD, Symbol("value") -> optionalNFTDraft.get.getRentPeriod)
+            @commonInputText(nftBasicDetailForm, constants.FormField.DOCUMENT_LINK, Symbol("value") -> optionalNFTDraft.get.getDocumentLink)
+        } else {
+            @commonInputText(nftBasicDetailForm, constants.FormField.REGISTRATION_ID)
+            @commonDescriptionText(nftBasicDetailForm, constants.FormField.NFT_DESCRIPTION)
+            @commonInputText(nftBasicDetailForm, constants.FormField.ADDRESS)
+            @commonInputText(nftBasicDetailForm, constants.FormField.POSTAL_CODE)
+            @commonInputBigDecimal(nftBasicDetailForm, constants.FormField.TOTAL_AREA)
+            @commonInputText(nftBasicDetailForm, constants.FormField.GEO_LOCATION)
+            @commonInputText(nftBasicDetailForm, constants.FormField.SECRET_VALUE)
+            @commonInputLong(nftBasicDetailForm, constants.FormField.TOTAL_UNITS)
+            @commonToggleButton(nftBasicDetailForm, constants.FormField.RENTED)
+            @commonInputBigDecimal(nftBasicDetailForm, constants.FormField.RENTAL_AMOUNT)
+            @commonInputInt(nftBasicDetailForm, constants.FormField.RENT_PERIOD)
+            @commonInputText(nftBasicDetailForm, constants.FormField.DOCUMENT_LINK)
+        }
+        @commonInputText(nftBasicDetailForm, constants.FormField.NFT_ID, Symbol("value") -> nftId, Symbol("containerDivClass") -> "hidden", Symbol("readonly") -> "readonly")
+        @commonCheckbox(nftBasicDetailForm, constants.FormField.SAVE_NFT_DRAFT, Symbol("containerDivClass") -> "hidden")
+        <div class="horizontal-align">
+            <div class="d-flex gap-3 align-items-center me-3 propertyModalButton">
+@*                <button class="form-secondary-button active" type="button" onclick="saveToDraftNft()">@Messages(constants.View.CREATE_COLLECTION_SAVE_DRAFT_BUTTON)</button>*@
+                <button class="form-primary-button active" type="button" onclick="submitButtonNft();">@Messages(constants.Form.NFT_BASIC_DETAIL.submit)</button>
+            </div>
+        </div>
     }
-    @commonInputText(nftBasicDetailForm, constants.FormField.NFT_TAGS, Symbol("class") -> "hidden")
-    <div class="hashtagWrapper">
-        <div class="content">
-            <label for="hashtagField">@Messages(constants.View.CREATE_NFT_TAG_LABEL)</label>
-            <ul id="hashtagList" class="mt-2">
-                <input type="text" id="hashtagField" placeholder="@Messages(constants.View.CREATE_NFT_TAG_PLACEHOLDER)"/>
-            </ul>
-        </div>
-        <div class="mt-1 view details">
-            <p><span>@constants.NFT.Tags.MaximumAllowed</span> @Messages(constants.View.CREATE_NFT_TAG_REMAINING_LABEL)</p>
-        </div>
-    </div>
-    @commonInputText(nftBasicDetailForm, constants.FormField.COLLECTION_ID, Symbol("value") -> collectionId, Symbol("containerDivClass") -> "hidden", Symbol("readonly") -> "readonly")
-    @commonInputText(nftBasicDetailForm, constants.FormField.NFT_ID, Symbol("value") -> nftId, Symbol("containerDivClass") -> "hidden", Symbol("readonly") -> "readonly")
-}
-<script src="@utilities.PublicResource.getVersionedRoute("javascripts/nfts/createNft.js")"></script>
-@if(optionalNFTDraft.isDefined && optionalNFTDraft.get.tagNames.isDefined) {
+    <script src="@utilities.PublicResource.getVersionedRoute("javascripts/nfts/createNft.js")"></script>
     <script>
-            addDraftTags('@optionalNFTDraft.get.tagNames.get.mkString(",")')
+        hideSubmitButton();
     </script>
-}

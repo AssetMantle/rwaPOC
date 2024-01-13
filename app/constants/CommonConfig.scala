@@ -16,7 +16,7 @@ object CommonConfig {
   val AppVersion: String = config.get[String]("app.version")
   val AppSecret: Array[Byte] = config.get[String]("app.secret").getBytes()
   val ExplorerUrl = "https://explorer.assetmantle.one"
-  val WaitTillShutdown = 20000 // milliseconds
+  val WaitTillShutdown = 5000 // milliseconds
 
   val SessionTokenTimeout: Int = config.get[Int]("play.http.session.token.timeout")
 

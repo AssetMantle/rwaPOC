@@ -1,5 +1,6 @@
 package controllers.actions
 
+import constants.Account.AccountType
 import controllers.logging.{WithActionAsyncLogging, WithMultipartFormActionAsyncLogging}
 import exceptions.BaseException
 import models.{master, masterTransaction}
@@ -45,8 +46,8 @@ class WithLoginAction @Inject()(
       address <- address
       currentSessionToken <- currentSessionToken
       (verify, account) <- verify(username, address, currentSessionToken)
-    } yield (verify, LoginState(username = username, address = address, accountType = account.accountType))).recover {
-      case _: BaseException => (false, LoginState(username = "", address = "", accountType = ""))
+    } yield (verify, LoginState(username = username, address = address, accountType = account.getAccountType()))).recover {
+      case _: BaseException => (false, LoginState(username = "", address = "", accountType = AccountType("", -1)))
     }
   }
 

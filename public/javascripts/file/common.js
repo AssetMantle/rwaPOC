@@ -12,9 +12,9 @@ function getFileTypes(documentType) {
     return fileTypes
 }
 
-function uploadFile(storeFileRoute, uploadRoute, id, documentType, filesSupported, maxFileSize, onSuccessCallback) {
+function uploadFile(storeFileRoute, uploadRoute, documentType, filesSupported, maxFileSize, onSuccessCallback) {
     const rFile = new Resumable({
-        target: storeFileRoute(id, documentType).url,
+        target: storeFileRoute(documentType).url,
         fileType: filesSupported.split("_"),
         query: {csrfToken: $('[name="csrfToken"]').attr('value')},
         maxFileSize: maxFileSize
@@ -43,7 +43,7 @@ function uploadFile(storeFileRoute, uploadRoute, id, documentType, filesSupporte
 
     rFile.on('fileSuccess', function (file) {
         $("#uploadControls_" + documentType).fadeOut(500);
-        let storeDbRoute = uploadRoute(id, documentType, file.fileName);
+        let storeDbRoute = uploadRoute(documentType, file.fileName);
         // let loadingSpinner = $('#commonSpinner');
         $.ajax({
             url: storeDbRoute.url,
@@ -91,9 +91,9 @@ function uploadFile(storeFileRoute, uploadRoute, id, documentType, filesSupporte
 
 }
 
-function updateFile(storeFileRoute, updateRoute, id, documentType, filesSupported, maxFileSize) {
+function updateFile(storeFileRoute, updateRoute, documentType, filesSupported, maxFileSize) {
     const rFile = new Resumable({
-        target: storeFileRoute(id, documentType).url,
+        target: storeFileRoute(documentType).url,
         fileType: filesSupported.split("_"),
         query: {csrfToken: $('[name="csrfToken"]').attr('value')},
         maxFileSize: maxFileSize
@@ -116,7 +116,7 @@ function updateFile(storeFileRoute, updateRoute, id, documentType, filesSupporte
     let updateCompletionMessage = document.getElementById('updateCompletionMessage_' + documentType);
     rFile.on('fileSuccess', function (file) {
         $("#updateControls").delay(1000).fadeOut(1000);
-        let updateDbRoute = updateRoute(file.fileName, id, documentType);
+        let updateDbRoute = updateRoute(file.fileName, documentType);
         let loadingSpinner = $('#commonSpinner');
         $.ajax({
             url: updateDbRoute.url,

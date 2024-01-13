@@ -2,13 +2,13 @@
 
 @(accountId: String)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: Option[LoginState])
 
-<div class="mt-2 mb-0 item item-center collectionContainer">
-    <div class="p-0 profile-card">
+<div class="item item-center nftContainer">
+    <div class="profile-card">
         <div class="profiles-container">
-            <div class="loadMoreElement show">
-
-                <div class="profile-list" id="art">
-                    <div id="listedCollectionsPerPage" class="w-100 list grid-view-filter collectionsPerPage"></div>
+            <div class="nft-list">
+                <div class="nft-list-container">
+                    <div id="nftsPerPage" class="row m-0 nftsPerPage">
+                    </div>
                 </div>
                     <!-- Loader -->
                 <div class="loading">
@@ -21,9 +21,12 @@
         </div>
     </div>
 </div>
-
-<script src="@utilities.PublicResource.getVersionedRoute("javascripts/profile/listed/loadMore.js")" type="text/javascript"></script>
-<script>loadFirstListedCollections('@accountId');</script>
-<script> window.onscroll = function () {
-    loadListedCollectionOnScroll('@accountId');
-} </script>
+<script src="@utilities.PublicResource.getVersionedRoute("javascripts/profile/listed/nftLoadMore.js")" type="text/javascript"></script>
+<script>
+        loadFirstListedNFTs('@accountId');
+        checkAndPushState(jsRoutes.controllers.SecondaryMarketController.viewListedCollectionNFTs('@accountId').url, ('@accountId' + '/LISTED/'), "listedCollection");
+        window.onscroll = function () {
+            loadListedNftOnScroll('@{accountId}');
+        }
+        showLoader();
+</script>

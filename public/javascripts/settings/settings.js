@@ -35,7 +35,6 @@ function changeActive(setAddress) {
     if (oldAddress !== setAddress) {
         getForm(jsRoutes.controllers.AccountController.changeActiveKeyForm(setAddress));
     } else {
-        console.log("setting to same address");
     }
 }
 
@@ -114,16 +113,13 @@ function fetchWrappedTokenBalance() {
         async: true,
         statusCode: {
             200: function (data) {
-                console.log(data);
                 $('#walletTradeBalance').html(data);
             },
             400: function (data) {
-                console.log(data.responseText)
             },
             204: function (data) {
             },
             500: function (data) {
-                console.log(data.responseText)
             }
         }
     });

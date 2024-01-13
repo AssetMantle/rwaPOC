@@ -1,5 +1,6 @@
 package models.master
 
+import constants.Account.AccountType
 import models.master.Accounts.AccountTable
 import models.traits._
 import play.api.Logger
@@ -11,34 +12,34 @@ import slick.jdbc.H2Profile.api._
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-case class Account(id: String, lowercaseId: String, passwordHash: Array[Byte], salt: Array[Byte], iterations: Int, accountType: String, language: String, identityId: Option[String], createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None) extends Logging with Entity[String] {
+case class Account(id: String, lowercaseId: String, email: String, emailVerified: Option[Boolean], accountType: Int, language: String, identityId: String, createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None) extends Logging with Entity[String] {
 
   def getIdentityID: IdentityID = utilities.Identity.getMantlePlaceIdentityID(this.id)
 
   def getLang: Lang = Lang(this.language)
 
-  def isCreator: Boolean = utilities.Account.isCreator(this.accountType)
+  def isCreator: Boolean = false
 
-  def isVerifiedCreator: Boolean = utilities.Account.isVerifiedCreator(this.accountType)
+  def isVerifiedCreator: Boolean = false
+
+  def getAccountType()(implicit module: String, logger: Logger): AccountType = constants.Account.Type.getAccountType(this.accountType)
 }
 
 private[master] object Accounts {
 
   class AccountTable(tag: Tag) extends Table[Account](tag, "Account") with ModelTable[String] {
 
-    def * = (id, lowercaseId, passwordHash, salt, iterations, accountType, language, identityId.?, createdBy.?, createdOnMillisEpoch.?, updatedBy.?, updatedOnMillisEpoch.?) <> (Account.tupled, Account.unapply)
+    def * = (id, lowercaseId, email, emailVerified.?, accountType, language, identityId, createdBy.?, createdOnMillisEpoch.?, updatedBy.?, updatedOnMillisEpoch.?) <> (Account.tupled, Account.unapply)
 
     def id = column[String]("id", O.PrimaryKey)
 
     def lowercaseId = column[String]("lowercaseId")
 
-    def passwordHash = column[Array[Byte]]("passwordHash")
+    def email = column[String]("email")
 
-    def salt = column[Array[Byte]]("salt")
+    def emailVerified = column[Boolean]("emailVerified")
 
-    def iterations = column[Int]("iterations")
-
-    def accountType = column[String]("accountType")
+    def accountType = column[Int]("accountType")
 
     def language = column[String]("language")
 
@@ -69,16 +70,15 @@ class Accounts @Inject()(
 
   object Service {
 
-    def upsertOnSignUp(username: String, lang: Lang, accountType: String): Future[Unit] = {
+    def upsertOnSignUp(username: String, lang: Lang, email: String, accountType: AccountType): Future[Unit] = {
       val account = Account(
         id = username,
         lowercaseId = username.toLowerCase,
-        passwordHash = Array[Byte](),
-        salt = Array[Byte](),
-        iterations = 0,
+        email = email,
+        emailVerified = Option(false),
         language = lang.language,
-        accountType = accountType,
-        identityId = Option(utilities.Identity.getMantlePlaceIdentityID(username).asString),
+        accountType = accountType.id,
+        identityId = utilities.Identity.getMantlePlaceIdentityID(username).asString,
       )
       for {
         _ <- upsert(account)
@@ -97,7 +97,7 @@ class Accounts @Inject()(
     def updateAccountToCreator(accountId: String): Future[Unit] = {
       val account = tryGetById(accountId)
 
-      def update(account: Account) = if (!account.isCreator) updateById(account.copy(accountType = constants.Account.Type.CREATOR)) else Future()
+      def update(account: Account) = if (!account.isCreator) updateById(account.copy(accountType = constants.Account.Type.CREATOR.id)) else Future()
 
       for {
         account <- account

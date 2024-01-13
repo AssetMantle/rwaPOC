@@ -7,7 +7,7 @@ import models.blockchainTransaction.{UserTransaction, UserTransactions}
 import models.master.{NFT, NFTOwner}
 import models.masterTransaction.SecondaryMarketSellTransactions.SecondaryMarketSellTransactionTable
 import models.traits._
-import models.{analytics, blockchain, master}
+import models.{blockchain, master}
 import org.bitcoinj.core.ECKey
 import play.api.Logger
 import play.api.db.slick.DatabaseConfigProvider
@@ -92,13 +92,10 @@ class SecondaryMarketSellTransactions @Inject()(
                                                  protected val dbConfigProvider: DatabaseConfigProvider,
                                                  blockchainOrders: blockchain.Orders,
                                                  utilitiesOperations: utilities.Operations,
-                                                 masterCollections: master.Collections,
                                                  masterNFTs: master.NFTs,
-                                                 masterNFTProperties: master.NFTProperties,
                                                  masterNFTOwners: master.NFTOwners,
                                                  masterSecondaryMarkets: master.SecondaryMarkets,
                                                  utilitiesTransaction: utilities.Transaction,
-                                                 collectionsAnalysis: analytics.CollectionsAnalysis,
                                                  utilitiesNotification: utilities.Notification,
                                                  userTransactions: UserTransactions,
                                                )(implicit val executionContext: ExecutionContext)
@@ -198,19 +195,13 @@ class SecondaryMarketSellTransactions @Inject()(
               val markSecondaryMarket = masterSecondaryMarkets.Service.markSecondaryMarketCreated(secondaryMarketSellTx.secondaryMarketId)
               val updateNFTOwner = masterNFTOwners.Service.onSecondaryMarket(nftId = secondaryMarketSellTx.nftId, ownerId = secondaryMarketSellTx.sellerId, sellQuantity = secondaryMarketSellTx.quantity)
 
-              def sendNotifications(nft: NFT) = utilitiesNotification.send(secondaryMarketSellTx.sellerId, constants.Notification.SECONDARY_MARKET_CREATION_SUCCESSFUL, nft.name)(s"'${nft.id}'")
-
-              def markCollectionOnSecondaryMarket(collectionId: String) = masterCollections.Service.markListedOnSecondaryMarket(collectionId)
-
-              def updateAnalytics(collectionId: String) = collectionsAnalysis.Utility.onCreateSecondaryMarket(collectionId, totalListed = secondaryMarketSellTx.quantity.toInt, listingPrice = secondaryMarketSellTx.getPrice)
+              def sendNotifications(nft: NFT) = utilitiesNotification.send(secondaryMarketSellTx.sellerId, constants.Notification.SECONDARY_MARKET_CREATION_SUCCESSFUL, nft.address)(s"'${nft.id}'")
 
               for {
                 _ <- markSuccess
                 nft <- nft
                 _ <- updateNFTOwner
                 _ <- markSecondaryMarket
-                _ <- markCollectionOnSecondaryMarket(nft.collectionId)
-                _ <- updateAnalytics(nft.collectionId)
                 _ <- sendNotifications(nft)
               } yield ()
             } else {
@@ -218,7 +209,7 @@ class SecondaryMarketSellTransactions @Inject()(
               val nft = masterNFTs.Service.tryGet(secondaryMarketSellTx.nftId)
               val markMaster = masterSecondaryMarkets.Service.markOnOrderCreationFailed(secondaryMarketSellTxs.filter(_.txHash == secondaryMarketSellTx.txHash).map(_.secondaryMarketId))
 
-              def sendNotifications(nft: NFT) = utilitiesNotification.send(secondaryMarketSellTx.sellerId, constants.Notification.SECONDARY_MARKET_CREATION_FAILED, nft.name)(s"'${nft.id}'")
+              def sendNotifications(nft: NFT) = utilitiesNotification.send(secondaryMarketSellTx.sellerId, constants.Notification.SECONDARY_MARKET_CREATION_FAILED, nft.address)(s"'${nft.id}'")
 
               for {
                 _ <- markFailed

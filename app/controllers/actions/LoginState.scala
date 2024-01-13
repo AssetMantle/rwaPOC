@@ -1,14 +1,12 @@
 package controllers.actions
 
-case class LoginState(username: String, address: String, accountType: String) {
+import constants.Account.AccountType
 
-  def isCreator: Boolean = utilities.Account.isCreator(this.accountType)
+case class LoginState(username: String, address: String, accountType: AccountType) {
 
-  def isVerifiedCreator: Boolean = utilities.Account.isVerifiedCreator(this.accountType)
+  def isUser: Boolean = this.accountType.id == constants.Account.Type.USER.id
 
-  def isGenesisCreator: Boolean = this.accountType == constants.Account.Type.GENESIS_CREATOR
-
-  def isUser: Boolean = this.accountType == constants.Account.Type.USER
+  def isCreator: Boolean = this.accountType.id == constants.Account.Type.CREATOR.id
 
   def getIdentityId: String = utilities.Identity.getMantlePlaceIdentityID(this.username).asString
 

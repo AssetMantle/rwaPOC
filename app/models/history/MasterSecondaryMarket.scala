@@ -2,9 +2,8 @@ package models.history
 
 import constants.Scheduler
 import exceptions.BaseException
-import models.analytics.CollectionsAnalysis
 import models.history.MasterSecondaryMarkets.MasterSecondaryMarketTable
-import models.master.{Collection, NFT}
+import models.master.NFT
 import models.traits._
 import models.{master, masterTransaction}
 import play.api.Logger
@@ -16,19 +15,16 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-case class MasterSecondaryMarket(id: String, orderId: String, nftId: String, collectionId: String, sellerId: String, quantity: BigInt, price: MicroNumber, denom: String, endHours: Int, externallyMade: Boolean, completed: Boolean, cancelled: Boolean, expired: Boolean, status: Option[Boolean], createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None, deletedBy: Option[String] = None, deletedOnMillisEpoch: Option[Long] = None) extends HistoryLogging {
+case class MasterSecondaryMarket(id: String, orderId: String, nftId: String, sellerId: String, quantity: BigInt, price: MicroNumber, endHours: Int, completed: Boolean, cancelled: Boolean, expired: Boolean, status: Option[Boolean], createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None, deletedBy: Option[String] = None, deletedOnMillisEpoch: Option[Long] = None) extends HistoryLogging {
 
   def serialize(): MasterSecondaryMarkets.MasterSecondaryMarketSerialized = MasterSecondaryMarkets.MasterSecondaryMarketSerialized(
     id = this.id,
     orderId = this.orderId,
     nftId = this.nftId,
-    collectionId = this.collectionId,
     sellerId = this.sellerId,
     quantity = BigDecimal(this.quantity),
     price = this.price.toBigDecimal,
-    denom = this.denom,
     endHours = this.endHours,
-    externallyMade = this.externallyMade,
     completed = this.completed,
     cancelled = this.cancelled,
     expired = this.expired,
@@ -44,14 +40,14 @@ case class MasterSecondaryMarket(id: String, orderId: String, nftId: String, col
 
 private[history] object MasterSecondaryMarkets {
 
-  case class MasterSecondaryMarketSerialized(id: String, orderId: String, nftId: String, collectionId: String, sellerId: String, quantity: BigDecimal, price: BigDecimal, denom: String, endHours: Int, externallyMade: Boolean, completed: Boolean, cancelled: Boolean, expired: Boolean, status: Option[Boolean], createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None, deletedBy: Option[String] = None, deletedOnMillisEpoch: Option[Long] = None) extends Entity[String] {
+  case class MasterSecondaryMarketSerialized(id: String, orderId: String, nftId: String, sellerId: String, quantity: BigDecimal, price: BigDecimal, endHours: Int, completed: Boolean, cancelled: Boolean, expired: Boolean, status: Option[Boolean], createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None, deletedBy: Option[String] = None, deletedOnMillisEpoch: Option[Long] = None) extends Entity[String] {
 
-    def deserialize()(implicit module: String, logger: Logger): MasterSecondaryMarket = MasterSecondaryMarket(id = id, orderId = orderId, nftId = nftId, collectionId = collectionId, sellerId = sellerId, quantity = this.quantity.toBigInt, price = MicroNumber(price), denom = denom, endHours = endHours, externallyMade = externallyMade, completed = completed, expired = expired, status = status, cancelled = cancelled, createdBy = createdBy, createdOnMillisEpoch = createdOnMillisEpoch, updatedBy = updatedBy, updatedOnMillisEpoch = updatedOnMillisEpoch, deletedBy = this.deletedBy, deletedOnMillisEpoch = this.deletedOnMillisEpoch)
+    def deserialize()(implicit module: String, logger: Logger): MasterSecondaryMarket = MasterSecondaryMarket(id = id, orderId = orderId, nftId = nftId, sellerId = sellerId, quantity = this.quantity.toBigInt, price = MicroNumber(price), endHours = endHours, completed = completed, expired = expired, status = status, cancelled = cancelled, createdBy = createdBy, createdOnMillisEpoch = createdOnMillisEpoch, updatedBy = updatedBy, updatedOnMillisEpoch = updatedOnMillisEpoch, deletedBy = this.deletedBy, deletedOnMillisEpoch = this.deletedOnMillisEpoch)
   }
 
   class MasterSecondaryMarketTable(tag: Tag) extends Table[MasterSecondaryMarketSerialized](tag, "MasterSecondaryMarket") with ModelTable[String] {
 
-    def * = (id, orderId, nftId, collectionId, sellerId, quantity, price, denom, endHours, externallyMade, completed, cancelled, expired, status.?, createdBy.?, createdOnMillisEpoch.?, updatedBy.?, updatedOnMillisEpoch.?, deletedBy.?, deletedOnMillisEpoch.?) <> (MasterSecondaryMarketSerialized.tupled, MasterSecondaryMarketSerialized.unapply)
+    def * = (id, orderId, nftId, sellerId, quantity, price, endHours, completed, cancelled, expired, status.?, createdBy.?, createdOnMillisEpoch.?, updatedBy.?, updatedOnMillisEpoch.?, deletedBy.?, deletedOnMillisEpoch.?) <> (MasterSecondaryMarketSerialized.tupled, MasterSecondaryMarketSerialized.unapply)
 
     def id = column[String]("id", O.PrimaryKey)
 
@@ -59,7 +55,6 @@ private[history] object MasterSecondaryMarkets {
 
     def nftId = column[String]("nftId")
 
-    def collectionId = column[String]("collectionId")
 
     def sellerId = column[String]("sellerId")
 
@@ -67,11 +62,7 @@ private[history] object MasterSecondaryMarkets {
 
     def price = column[BigDecimal]("price")
 
-    def denom = column[String]("denom")
-
     def endHours = column[Int]("endHours")
-
-    def externallyMade = column[Boolean]("externallyMade")
 
     def completed = column[Boolean]("completed")
 
@@ -98,12 +89,10 @@ private[history] object MasterSecondaryMarkets {
 
 @Singleton
 class MasterSecondaryMarkets @Inject()(
-                                        masterCollections: master.Collections,
                                         masterSecondaryMarkets: master.SecondaryMarkets,
                                         utilitiesOperations: utilities.Operations,
                                         masterNFTs: master.NFTs,
                                         masterNFTOwners: master.NFTOwners,
-                                        collectionsAnalysis: CollectionsAnalysis,
                                         secondaryMarketSellTransactions: masterTransaction.SecondaryMarketSellTransactions,
                                         secondaryMarketBuyTransactions: masterTransaction.SecondaryMarketBuyTransactions,
                                         protected val dbConfigProvider: DatabaseConfigProvider,
@@ -130,15 +119,6 @@ class MasterSecondaryMarkets @Inject()(
 
   object Utility {
 
-    private def checkAndUpdateCollection(collectionId: String) = {
-      val checkCollectionExists = masterSecondaryMarkets.Service.existByCollectionId(collectionId)
-
-      for {
-        checkCollectionExists <- checkCollectionExists
-        _ <- if (!checkCollectionExists) masterCollections.Service.removeFromListedOnSecondaryMarket(collectionId) else Future(0)
-      } yield ()
-    }
-
     private def deleteSecondaryMarket(secondaryMarket: master.SecondaryMarket) = {
       val addToHistory = Service.insertOrUpdate(secondaryMarket.toHistory)
 
@@ -147,26 +127,22 @@ class MasterSecondaryMarkets @Inject()(
       for {
         _ <- addToHistory
         _ <- deleteSecondaryMarket()
-        _ <- checkAndUpdateCollection(secondaryMarket.collectionId)
       } yield ()
     }
 
     private def removeFromSecondaryMarket(secondaryMarket: master.SecondaryMarket) = {
       val addToHistory = Service.insertOrUpdate(secondaryMarket.toHistory)
       val nft = masterNFTs.Service.tryGet(secondaryMarket.nftId)
-      val collection = masterCollections.Service.tryGet(secondaryMarket.collectionId)
 
-      def unlistSecondaryMarket(nft: NFT, collection: Collection) = masterNFTOwners.Service.unlistFromSecondaryMarket(nft = nft, collection = collection, ownerId = secondaryMarket.sellerId, sellQuantity = secondaryMarket.quantity)
+      def unlistSecondaryMarket(nft: NFT) = masterNFTOwners.Service.unlistFromSecondaryMarket(nft = nft, ownerId = secondaryMarket.sellerId, sellQuantity = secondaryMarket.quantity)
 
       def deleteSecondaryMarket() = masterSecondaryMarkets.Service.delete(secondaryMarket.id)
 
       for {
         _ <- addToHistory
         nft <- nft
-        collection <- collection
-        _ <- unlistSecondaryMarket(nft, collection)
+        _ <- unlistSecondaryMarket(nft)
         _ <- deleteSecondaryMarket()
-        _ <- checkAndUpdateCollection(secondaryMarket.collectionId)
       } yield ()
     }
 

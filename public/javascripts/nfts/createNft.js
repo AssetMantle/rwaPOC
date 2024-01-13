@@ -13,6 +13,16 @@ function countHashtags() {
     tagNum.innerText = maxTags - tags.length;
 }
 
+function saveToDraftNft() {
+    $("#SAVE_NFT_DRAFT").attr("checked", "checked");
+    $("#FORM_NFT_BASIC_DETAIL_SUBMIT").click();
+}
+
+function submitButtonNft() {
+    $("#FORM_NFT_BASIC_DETAIL_SUBMIT").click();
+}
+
+
 function createHashtag() {
     ul.querySelectorAll("li").forEach(li => li.remove());
     tags.slice().reverse().forEach(tag => {
@@ -84,4 +94,8 @@ function addDraftTags(tags) {
     for (let i = 0; i < allTags.length; i++) {
         addProperty(allTags[i]);
     }
+}
+
+function hideSubmitButton() {
+    $("#formSubmitButton").hide();
 }

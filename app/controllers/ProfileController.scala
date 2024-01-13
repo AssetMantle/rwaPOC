@@ -24,9 +24,6 @@ class ProfileController @Inject()(
                                    blockchainBlocks: blockchain.Blocks,
                                    masterAccounts: master.Accounts,
                                    masterKeys: master.Keys,
-                                   masterWhitelists: master.Whitelists,
-                                   masterCollections: master.Collections,
-                                   masterWhitelistMembers: master.WhitelistMembers,
                                    masterTransactionNotifications: masterTransaction.Notifications,
                                    masterNFTOwners: master.NFTOwners,
                                    userTransactions: UserTransactions,
@@ -113,7 +110,7 @@ class ProfileController @Inject()(
         (for {
           key <- key
           account <- account
-        } yield Ok(views.html.profile.profileInfoCard(accountId = accountId, address = key.address, accountType = account.accountType, createdOn = account.createdOnMillisEpoch.getOrElse(0L)))
+        } yield Ok(views.html.profile.profileInfoCard(accountId = accountId, address = key.address, accountType = account.getAccountType().name, createdOn = account.createdOnMillisEpoch.getOrElse(0L)))
           ).recover {
           case baseException: BaseException => BadRequest(baseException.failure.message)
         }
@@ -131,11 +128,9 @@ class ProfileController @Inject()(
     withoutLoginActionAsync { implicit loginState =>
       implicit request =>
         val countOwnedNFTs = masterNFTOwners.Service.countOwnedNFTs(accountId)
-        val countCreated = masterCollections.Service.countCreated(accountId)
         (for {
           countOwnedNFTs <- countOwnedNFTs
-          countCreated <- countCreated
-        } yield Ok(views.html.profile.profileAnalysis(totalCollected = countOwnedNFTs, totalCollectionCreated = countCreated))
+        } yield Ok(views.html.profile.profileAnalysis(totalCollected = countOwnedNFTs))
           ).recover {
           case baseException: BaseException => BadRequest(baseException.failure.message)
         }

@@ -34,7 +34,7 @@ object Message {
 
   implicit val chatWrites: OWrites[Chat] = Json.writes[Chat]
 
-  case class Asset(toUser: String, nftId: String, collectionId: String, operation: String) extends PrivateMessage {
+  case class Asset(toUser: String, nftId: String, operation: String) extends PrivateMessage {
     def getMessageType: String = constants.Actor.MessageType.ASSET
   }
 

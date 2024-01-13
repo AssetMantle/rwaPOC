@@ -52,10 +52,9 @@ object Secret {
   def nftAirDropWallet: Wallet = if (mintNFTCampaignMnemonics.nonEmpty) utilities.Wallet.getWallet(mintNFTCampaignMnemonics)
   else throw new IllegalArgumentException("MINT_NFT_CAMPAIGN_MNEMONICS_EMPTY")
 
-  def setSecrets(memoSignerSeeds: Seq[String], mantlePlaceSeeds: Seq[String], mintNFTCampaignSeeds: Seq[String]): Unit = if (!Sealed) {
+  def setSecrets(memoSignerSeeds: Seq[String], mantlePlaceSeeds: Seq[String]): Unit = if (!Sealed) {
     memoSignerMnemonics = memoSignerSeeds
     mantlePlaceMnemonics = mantlePlaceSeeds
-    mintNFTCampaignMnemonics = mintNFTCampaignSeeds
     Sealed = true
   }
 

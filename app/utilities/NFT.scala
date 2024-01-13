@@ -5,7 +5,7 @@ import schema.qualified.Immutables
 
 object NFT {
 
-  def getAWSKey(fileName: String): String = "nft/" + fileName
+  def getAWSKey(fileName: String): String = "rwaPOC/" + fileName
 
   def getAssetID(classificationID: ClassificationID, immutables: Immutables): AssetID = schema.utilities.ID.getAssetID(classificationID, immutables)
 

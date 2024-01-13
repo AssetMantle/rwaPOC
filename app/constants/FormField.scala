@@ -28,6 +28,7 @@ object FormField {
 
   //StringFormField
   val USERNAME: StringFormField = StringFormField("USERNAME", 3, 50, RegularExpression.ACCOUNT_ID)
+  val EMAIL_ADDRESS: StringFormField = StringFormField("EMAIL_ADDRESS", 5, 50, RegularExpression.EMAIL_ADDRESS)
   val TO_ACCOUNT_ID: StringFormField = StringFormField("TO_ACCOUNT_ID", 3, 50, RegularExpression.ACCOUNT_ID)
   val PASSWORD: StringFormField = StringFormField("PASSWORD", 5, 128)
   val WALLET_ADDRESS: StringFormField = StringFormField("WALLET_ADDRESS", 45, 45, RegularExpression.MANTLE_ADDRESS)
@@ -63,6 +64,10 @@ object FormField {
   val COLLECTION_PROPERTY_DEFAULT_VALUE: StringFormField = StringFormField("COLLECTION_PROPERTY_DEFAULT_VALUE", 1, 30)
   val NFT_NAME: StringFormField = StringFormField("NFT_NAME", 3, 50)
   val NFT_DESCRIPTION: StringFormField = StringFormField("NFT_DESCRIPTION", 3, 256)
+  val REGISTRATION_ID: StringFormField = StringFormField("REGISTRATION_ID", 3, 256)
+  val SECRET_VALUE: StringFormField = StringFormField("SECRET_VALUE", 1, 256)
+  val ADDRESS: StringFormField = StringFormField("ADDRESS", 3, 256)
+  val POSTAL_CODE: StringFormField = StringFormField("POSTAL_CODE", 3, 256)
   val NFT_ID: StringFormField = StringFormField("NFT_ID", 64, 64)
   val NFT_ID_LIST: StringFormField = StringFormField("NFT_ID_LIST", 64, 6500)
   val NFT_TAGS: StringFormField = StringFormField("NFT_TAGS", 0, (constants.NFT.Tags.MaximumLength * constants.NFT.Tags.MaximumAllowed) + constants.NFT.Tags.MaximumAllowed - 1, RegularExpression.NFT_TAGS)
@@ -74,6 +79,8 @@ object FormField {
   val PUBLIC_LISTING_ID: StringFormField = StringFormField("PUBLIC_LISTING_ID", 16, 16)
   val NOTIFICATION_ID: StringFormField = StringFormField("NOTIFICATION_ID", 16, 16)
   val SECONDARY_MARKET_ID: StringFormField = StringFormField("SECONDARY_MARKET_ID", 16, 16)
+  val GEO_LOCATION: StringFormField = StringFormField("GEO_LOCATION", 1, 100)
+  val DOCUMENT_LINK: StringFormField = StringFormField("DOCUMENT_LINK", 1, 256)
 
   // UrlFormField
   val COLLECTION_WEBSITE: UrlFormField = UrlFormField("COLLECTION_WEBSITE")
@@ -91,6 +98,7 @@ object FormField {
   val COLLECTION_FRACTIONALIZED_DEFAULT: IntFormField = IntFormField("COLLECTION_FRACTIONALIZED_DEFAULT", 1, Int.MaxValue)
   val COLLECTION_LOCKABLE_DEFAULT: IntFormField = IntFormField("COLLECTION_LOCKABLE_DEFAULT", -1, Int.MaxValue)
   val COLLECTION_CUSTOM_BURNABLE_DEFAULT: IntFormField = IntFormField("COLLECTION_CUSTOM_BURNABLE_DEFAULT", -1, Int.MaxValue)
+  val RENT_PERIOD: IntFormField = IntFormField("RENT_PERIOD", 0, Int.MaxValue)
 
   // DoubleFormField
   val GAS_PRICE: BigDecimalFormField = BigDecimalFormField("GAS_PRICE", constants.Transaction.LowGasPrice, constants.Transaction.HighGasPrice)
@@ -128,11 +136,14 @@ object FormField {
   val COLLECTION_CUSTOM_BURNABLE_MUTABLE: BooleanFormField = BooleanFormField("COLLECTION_CUSTOM_BURNABLE_MUTABLE")
   val COLLECTION_CUSTOM_BURNABLE_HIDDEN: BooleanFormField = BooleanFormField("COLLECTION_CUSTOM_BURNABLE_HIDDEN")
   val COLLECTION_CUSTOM_BOND_AMOUNT_ENABLE: BooleanFormField = BooleanFormField("COLLECTION_CUSTOM_BOND_AMOUNT_ENABLE")
+  val RENTED: BooleanFormField = BooleanFormField("RENTED")
 
   // LongFormField
   val SELL_QUANTITY: LongFormField = LongFormField("SELL_QUANTITY", 1, Long.MaxValue)
   val BUY_QUANTITY: LongFormField = LongFormField("BUY_QUANTITY", 1, Long.MaxValue)
   val NFT_TRANSFER_AMOUNT: LongFormField = LongFormField("NFT_TRANSFER_AMOUNT", 1, Long.MaxValue)
+  val TOTAL_UNITS: LongFormField = LongFormField("TOTAL_UNITS", 1, Long.MaxValue)
+  val TOTAL_SUPPLY: LongFormField = LongFormField("TOTAL_SUPPLY", 1, Long.MaxValue)
 
   // SelectFormField
   // Not adding Height type for user
@@ -158,6 +169,8 @@ object FormField {
 
   // BigDecimalFormField
   val COLLECTION_ROYALTY: BigDecimalFormField = BigDecimalFormField("COLLECTION_ROYALTY", 0.0, constants.NFT.Sale.MaxCreatorFee * 100)
+  val TOTAL_AREA: BigDecimalFormField = BigDecimalFormField("TOTAL_AREA", 1.0, Long.MaxValue)
+  val RENTAL_AMOUNT: BigDecimalFormField = BigDecimalFormField("RENTAL_AMOUNT", 1.0, Long.MaxValue)
 
   case class StringFormField(name: String, minimumLength: Int, maximumLength: Int, regularExpression: RegularExpression = RegularExpression.ANY_STRING, errorMessage: String = "REGULAR_EXPRESSION_VALIDATION_FAILED") {
     val placeHolder: String = PLACEHOLDER_PREFIX + name

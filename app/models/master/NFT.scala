@@ -4,19 +4,17 @@ import models.master.NFTs.NFTTable
 import models.traits._
 import play.api.Logger
 import play.api.db.slick.DatabaseConfigProvider
-import schema.data.base.NumberData
 import schema.id.base.{AssetID, HashID}
 import schema.list.PropertyList
 import schema.property.base.{MesaProperty, MetaProperty}
 import schema.qualified.{Immutables, Mutables}
 import slick.jdbc.H2Profile.api._
-import utilities.MicroNumber
 
 import javax.inject.{Inject, Singleton}
 import javax.xml.bind.DatatypeConverter
 import scala.concurrent.{ExecutionContext, Future}
 
-case class NFT(id: String, assetId: Option[String], collectionId: String, name: String, description: String, totalSupply: BigInt, customBondAmount: Option[Long], isMinted: Option[Boolean], mintReady: Boolean, fileExtension: String, createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None) extends Logging {
+case class NFT(id: String, assetId: String, creatorId: String, totalSupply: BigInt, verified: Option[Boolean], isMinted: Option[Boolean], fileExtension: String, registrationId: String, description: String, address: String, postalCode: String, totalArea: BigDecimal, geoLocation: String, secretValue: String, rented: Boolean, rentalAmount: BigDecimal, rentPeriodicity: Int, documentLink: String, featured: Boolean, ranking: Int) {
 
   def getFileHash: String = this.id
 
@@ -26,80 +24,126 @@ case class NFT(id: String, assetId: Option[String], collectionId: String, name: 
 
   def getFileName: String = this.id + "." + this.fileExtension
 
-  def getAssetID: AssetID = AssetID(HashID(utilities.Secrets.base64URLDecode(this.assetId.getOrElse("UNKNOWN_ASSET_ID"))))
-
-  def getAssetID(nftProperties: Seq[NFTProperty], collection: Collection)(implicit module: String, logger: Logger): AssetID = utilities.NFT.getAssetID(collection.getClassificationID, this.getImmutables(nftProperties, collection))
+  def getAssetID: AssetID = AssetID(HashID(utilities.Secrets.base64URLDecode(this.assetId)))
 
   def getAwsKey: String = utilities.NFT.getAWSKey(this.getFileName)
 
   def getS3Url: String = constants.CommonConfig.AmazonS3.s3BucketURL + this.getAwsKey
 
-  def getServiceEndPoint: String = "https://marketplace.assetmantle.one/nftResource/" + this.id + "." + this.fileExtension
+  def getServiceEndPoint: String = utilities.Asset.getServiceEndPoint(id = this.id, fileExtension = this.fileExtension)
 
-  def getImmutableMetaProperties(nftProperties: Seq[NFTProperty], collection: Collection): Seq[MetaProperty] = nftProperties.filter(x => x.meta && !x.mutable && x.nftId == this.id).map(_.toMetaProperty) ++ utilities.Properties.getNFTDefaultImmutableMetaProperties(name = this.name, collectionName = collection.name, fileHash = this.getFileHashID, creatorID = collection.creatorId, fileExtension = this.fileExtension, endPoint = this.getServiceEndPoint)
+  def getImmutableMetaProperties: Seq[MetaProperty] = utilities.Asset.getDefaultImmutableMetaProperties(registrationId = this.registrationId, creatorId = this.creatorId, address = this.address, postalCode = this.postalCode, totalArea = this.totalArea, geoLocation = this.geoLocation, supply = this.totalSupply, fileHashID = this.getFileHashID, fileExtension = this.fileExtension, serviceEndpoint = this.getServiceEndPoint)
 
-  def getImmutableProperties(nftProperties: Seq[NFTProperty]): Seq[MesaProperty] = nftProperties.filter(x => !x.meta && !x.mutable && x.nftId == this.id).map(_.toMesaProperty)
+  def getImmutableProperties: Seq[MesaProperty] = utilities.Asset.getDefaultImmutableMesaProperties(this.secretValue)
 
-  def getMutableMetaProperties(nftProperties: Seq[NFTProperty], collection: Collection): Seq[MetaProperty] =if (collection.customBondAmountEnabled) nftProperties.filter(x => x.meta && x.mutable && x.nftId == this.id).map(_.toMetaProperty) else nftProperties.filter(x => x.meta && x.mutable && x.nftId == this.id).map(_.toMetaProperty) :+ schema.constants.Properties.BondAmountProperty.copy(data = NumberData(this.getBaseDenomBondAmount(collection)))
+  def getMutableMetaProperties: Seq[MetaProperty] = utilities.Asset.getDefaultMutableMetaProperties(rented = this.rented, rentAmount = this.rentalAmount, this.rentPeriodicity, this.documentLink)
 
-  def getMutableProperties(nftProperties: Seq[NFTProperty]): Seq[MesaProperty] = nftProperties.filter(x => !x.meta && x.mutable && x.nftId == this.id).map(_.toMesaProperty)
+  def getMutableProperties: Seq[MesaProperty] = utilities.Asset.getDefaultMutableMesaProperties
 
-  def getImmutables(nftProperties: Seq[NFTProperty], collection: Collection): Immutables = Immutables(PropertyList(this.getImmutableMetaProperties(nftProperties, collection) ++ this.getImmutableProperties(nftProperties)))
+  def getImmutables: Immutables = Immutables(PropertyList(this.getImmutableMetaProperties ++ this.getImmutableProperties))
 
-  def getMutables(nftProperties: Seq[NFTProperty], collection: Collection): Mutables = Mutables(PropertyList(this.getMutableMetaProperties(nftProperties, collection) ++ this.getMutableProperties(nftProperties)))
+  def getMutables: Mutables = Mutables(PropertyList(this.getMutableMetaProperties ++ this.getMutableProperties))
 
   def serialize: NFTs.NFTSerialized = NFTs.NFTSerialized(
-    id = this.id, assetId = this.assetId, collectionId = this.collectionId, name = this.name, description = this.description, totalSupply = BigDecimal(this.totalSupply), customBondAmount = this.customBondAmount, isMinted = this.isMinted, mintReady = this.mintReady, fileExtension = this.fileExtension.toLowerCase, createdBy = this.createdBy, createdOnMillisEpoch = this.createdOnMillisEpoch, updatedBy = this.updatedBy, updatedOnMillisEpoch = this.updatedOnMillisEpoch
+    id = this.id,
+    assetId = this.assetId,
+    creatorId = this.creatorId,
+    totalSupply = BigDecimal(this.totalSupply),
+    verified = this.verified,
+    isMinted = this.isMinted,
+    fileExtension = this.fileExtension.toLowerCase,
+    registrationId = this.registrationId,
+    description = this.description,
+    address = this.address,
+    postalCode = this.postalCode,
+    totalArea = this.totalArea,
+    geoLocation = this.geoLocation,
+    secretValue = this.secretValue,
+    rented = this.rented,
+    rentalAmount = this.rentalAmount,
+    rentPeriodicity = this.rentPeriodicity,
+    documentLink = this.documentLink,
+    featured = this.featured,
+    ranking = this.ranking,
   )
 
   def isImageType: Boolean = constants.File.ALL_IMAGES_WITH_GIF.contains(this.fileExtension)
 
   def isAudioType: Boolean = constants.File.ALL_AUDIO.contains(this.fileExtension)
 
-  def getBaseDenomBondAmount(collection: Collection): Long = if (this.customBondAmount.isDefined) this.customBondAmount.get else collection.getBaseDenomBondAmount
-
-  def getBondAmount(collection: Collection): MicroNumber = MicroNumber(BigDecimal(this.getBaseDenomBondAmount(collection)) / MicroNumber.factor)
-
 }
 
 private[master] object NFTs {
 
-  case class NFTSerialized(id: String, assetId: Option[String], collectionId: String, name: String, description: String, totalSupply: BigDecimal, customBondAmount: Option[Long], isMinted: Option[Boolean], mintReady: Boolean, fileExtension: String, createdBy: Option[String] = None, createdOnMillisEpoch: Option[Long] = None, updatedBy: Option[String] = None, updatedOnMillisEpoch: Option[Long] = None) extends Entity[String] {
+  case class NFTSerialized(id: String, assetId: String, creatorId: String, totalSupply: BigDecimal, verified: Option[Boolean], isMinted: Option[Boolean], fileExtension: String, registrationId: String, description: String, address: String, postalCode: String, totalArea: BigDecimal, geoLocation: String, secretValue: String, rented: Boolean, rentalAmount: BigDecimal, rentPeriodicity: Int, documentLink: String, featured: Boolean, ranking: Int) extends Entity[String] {
 
-    def deserialize()(implicit module: String, logger: Logger): NFT = NFT(id = this.id, assetId = this.assetId, collectionId = this.collectionId, name = this.name, description = this.description, totalSupply = this.totalSupply.toBigInt, customBondAmount = this.customBondAmount, isMinted = this.isMinted, mintReady = this.mintReady, fileExtension = this.fileExtension, createdBy = this.createdBy, createdOnMillisEpoch = this.createdOnMillisEpoch, updatedBy = this.updatedBy, updatedOnMillisEpoch = this.updatedOnMillisEpoch)
+    def deserialize()(implicit module: String, logger: Logger): NFT = NFT(
+      id = this.id,
+      assetId = this.assetId,
+      creatorId = this.creatorId,
+      totalSupply = this.totalSupply.toBigInt,
+      isMinted = this.isMinted,
+      verified = this.verified,
+      fileExtension = this.fileExtension,
+      registrationId = this.registrationId,
+      description = this.description,
+      address = this.address,
+      postalCode = this.postalCode,
+      totalArea = this.totalArea,
+      geoLocation = this.geoLocation,
+      secretValue = this.secretValue,
+      rented = this.rented,
+      rentalAmount = this.rentalAmount,
+      rentPeriodicity = this.rentPeriodicity,
+      documentLink = this.documentLink,
+      featured = this.featured,
+      ranking = this.ranking
+    )
   }
 
   class NFTTable(tag: Tag) extends Table[NFTSerialized](tag, "NFT") with ModelTable[String] {
 
-    def * = (id, assetId.?, collectionId, name, description, totalSupply, customBondAmount.?, isMinted.?, mintReady, fileExtension, createdBy.?, createdOnMillisEpoch.?, updatedBy.?, updatedOnMillisEpoch.?) <> (NFTSerialized.tupled, NFTSerialized.unapply)
+    def * = (id, assetId, creatorId, totalSupply, verified.?, isMinted.?, fileExtension, registrationId, description, address, postalCode, totalArea, geoLocation, secretValue, rented, rentalAmount, rentPeriodicity, documentLink, featured, ranking) <> (NFTSerialized.tupled, NFTSerialized.unapply)
 
     def id = column[String]("id", O.PrimaryKey)
 
     def assetId = column[String]("assetId")
 
-    def collectionId = column[String]("collectionId")
-
-    def name = column[String]("name")
-
-    def description = column[String]("description")
+    def creatorId = column[String]("creatorId")
 
     def totalSupply = column[BigDecimal]("totalSupply")
 
-    def customBondAmount = column[Long]("customBondAmount")
+    def verified = column[Boolean]("verified")
 
     def isMinted = column[Boolean]("isMinted")
 
-    def mintReady = column[Boolean]("mintReady")
-
     def fileExtension = column[String]("fileExtension")
 
-    def createdBy = column[String]("createdBy")
+    def registrationId = column[String]("registrationId")
 
-    def createdOnMillisEpoch = column[Long]("createdOnMillisEpoch")
+    def description = column[String]("description")
 
-    def updatedBy = column[String]("updatedBy")
+    def address = column[String]("address")
 
-    def updatedOnMillisEpoch = column[Long]("updatedOnMillisEpoch")
+    def postalCode = column[String]("postalCode")
+
+    def totalArea = column[BigDecimal]("totalArea")
+
+    def geoLocation = column[String]("geoLocation")
+
+    def secretValue = column[String]("secretValue")
+
+    def rented = column[Boolean]("rented")
+
+    def rentalAmount = column[BigDecimal]("rentalAmount")
+
+    def rentPeriodicity = column[Int]("rentPeriodicity")
+
+    def documentLink = column[String]("documentLink")
+
+    def featured = column[Boolean]("featured")
+
+    def ranking = column[Int]("ranking")
   }
 }
 
@@ -120,25 +164,17 @@ class NFTs @Inject()(
 
     def tryGet(nftId: String): Future[NFT] = tryGetById(nftId).map(_.deserialize)
 
-    def getAllIdsForCollection(collectionId: String): Future[Seq[String]] = filter(_.collectionId === collectionId).map(_.map(_.id))
+    def getByPageNumber(pageNumber: Int): Future[Seq[NFT]] = sortWithPagination(_.ranking)(offset = (pageNumber - 1) * constants.CommonConfig.Pagination.NFTsPerPage, limit = constants.CommonConfig.Pagination.NFTsPerPage).map(_.map(_.deserialize))
 
-    def getAllIdsForCollections(collectionIds: Seq[String]): Future[Seq[String]] = filter(_.collectionId.inSet(collectionIds)).map(_.map(_.id))
-
-    def getAllINFTsForCollections(collectionIds: Seq[String]): Future[Seq[NFT]] = filter(_.collectionId.inSet(collectionIds)).map(_.map(_.deserialize))
-
-    def getByPageNumber(collectionId: String, pageNumber: Int): Future[Seq[NFT]] = filterAndSortWithPagination(_.collectionId === collectionId)(_.name)(offset = (pageNumber - 1) * constants.CommonConfig.Pagination.NFTsPerPage, limit = constants.CommonConfig.Pagination.NFTsPerPage).map(_.map(_.deserialize))
+    def getByPageNumber(creatorId: String, pageNumber: Int): Future[Seq[NFT]] = filterAndSortWithPagination(_.creatorId === creatorId)(_.ranking)(offset = (pageNumber - 1) * constants.CommonConfig.Pagination.NFTsPerPage, limit = constants.CommonConfig.Pagination.NFTsPerPage).map(_.map(_.deserialize))
 
     def checkExists(id: String): Future[Boolean] = exists(id)
 
     def getByIds(ids: Seq[String]): Future[Seq[NFT]] = filter(_.id.inSet(ids)).map(_.map(_.deserialize))
 
-    def getForMinting(definedClasses: Seq[String]): Future[Seq[NFT]] = filter(x => x.mintReady && x.collectionId.inSet(definedClasses) && !x.isMinted).map(_.take(300)).map(_.map(_.deserialize))
-
-    def deleteCollections(collectionIds: Seq[String]): Future[Int] = filterAndDelete(_.collectionId.inSet(collectionIds))
+    def getForMinting: Future[Seq[NFT]] = filter(x => x.verified && !x.isMinted).map(_.take(300)).map(_.map(_.deserialize))
 
     def update(nft: NFT): Future[Unit] = updateById(nft.serialize)
-
-    def countNFTs(collectionId: String): Future[Int] = filterAndCount(_.collectionId === collectionId)
 
     def markNFTsMintPending(ids: Seq[String]): Future[Int] = customUpdate(tableQuery.filter(_.id.inSet(ids)).map(_.isMinted.?).update(null))
 
@@ -150,9 +186,7 @@ class NFTs @Inject()(
 
     def fetchAllWithNullAssetID(): Future[Seq[NFT]] = filter(_.assetId.?.isEmpty).map(_.map(_.deserialize))
 
-    def getRandomNFTs(collectionId: String, n: Int, filterOut: Seq[String]): Future[Seq[NFT]] = filter(x => x.collectionId === collectionId && !x.id.inSet(filterOut)).map(util.Random.shuffle(_).take(n)).map(_.map(_.deserialize))
-
-    def getUnmintedNFTIDs(collectionId: String): Future[Seq[String]] = customQuery(tableQuery.filter(x => x.collectionId === collectionId && (!x.isMinted.?.getOrElse(true)) || !x.mintReady).map(_.id).result)
+    def getUnmintedNFTIDs: Future[Seq[String]] = customQuery(tableQuery.filter(x => (!x.isMinted.?.getOrElse(true)) || !x.verified).map(_.id).result)
 
     def getByAssetId(assetId: AssetID): Future[Option[NFT]] = filter(_.assetId === assetId.asString).map(_.headOption).map(_.map(_.deserialize))
 
@@ -160,7 +194,7 @@ class NFTs @Inject()(
 
     def delete(id: String): Future[Int] = deleteById(id)
 
-    def markReadyForMint(ids: Seq[String]): Future[Int] = if (ids.nonEmpty) customUpdate(tableQuery.filter(_.id.inSet(ids)).map(_.mintReady).update(true)) else Future(0)
+    def markReadyForMint(ids: Seq[String]): Future[Int] = if (ids.nonEmpty) customUpdate(tableQuery.filter(_.id.inSet(ids)).map(_.verified).update(true)) else Future(0)
 
     def getAllNFTs: Future[Seq[NFT]] = getAll.map(_.map(_.deserialize))
   }

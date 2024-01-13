@@ -148,7 +148,7 @@ class IssueIdentityTransactions @Inject()(
         keys <- getKeys(anyPendingTx, issueIdentities)
         txHash <- doTx(issueIdentities, keys)
       } yield if (txHash != "") logger.info("ISSUE_IDENTITY: " + txHash + " ( " + keys.map(x => x.accountId -> x.address).toMap.toString() + " )") else ()
-    } else Future()
+    }
 
     private def checkTransactions() = {
       val issueIdentityTxs = Service.getAllPendingStatus

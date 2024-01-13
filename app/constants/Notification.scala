@@ -42,7 +42,6 @@ object Notification {
   val LOGIN: Notification = Notification("LOGIN", sendEmail = false, sendPushNotification = true, sendSMS = false, notificationType = Type.INFO)
   val LOG_OUT: Notification = Notification("LOG_OUT", sendEmail = false, sendPushNotification = true, sendSMS = false, notificationType = Type.INFO)
 
-  val COLLECTION_CREATED: Notification = Notification("COLLECTION_CREATED", sendEmail = false, sendPushNotification = true, sendSMS = false, sendToClient = true, notificationType = Type.SUCCESS, route = Option(routes.javascript.CollectionController.viewCollection))
   val NFT_CREATED: Notification = Notification("NFT_CREATED", sendEmail = false, sendPushNotification = true, sendSMS = false, sendToClient = true, notificationType = Type.SUCCESS, route = Option(routes.javascript.NFTController.viewNFT))
   val NFT_GIFTED: Notification = Notification("NFT_GIFTED", sendEmail = false, sendPushNotification = true, sendSMS = false, notificationType = Type.INFO, route = Option(routes.javascript.NFTController.viewNFT))
 

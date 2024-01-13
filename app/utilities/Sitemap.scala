@@ -26,11 +26,7 @@ object Sitemap {
 
   val allElements: Seq[Sitemap] = Seq(
     Sitemap(routes.IndexController.index(), 1.0),
-    Sitemap(routes.SecondaryMarketController.viewCollections(), 0.98),
-    Sitemap(routes.PublicListingController.viewCollections(), 0.96),
-    Sitemap(routes.CollectionController.viewCollections(), 0.894),
-    Sitemap(routes.SaleController.viewCollections(), 0.92),
-    Sitemap(routes.CollectionController.viewCollections(), 0.9)
+    Sitemap(routes.SecondaryMarketController.view(), 0.98),
   )
 
 

@@ -28,10 +28,7 @@ class WalletController @Inject()(
                                   blockchainSplits: blockchain.Splits,
                                   masterAccounts: master.Accounts,
                                   masterNFTs: master.NFTs,
-                                  masterNFTProperties: master.NFTProperties,
                                   blockchainBalances: blockchain.Balances,
-                                  sendCoinTransactions: masterTransaction.SendCoinTransactions,
-                                  masterTransactionTokenPrices: masterTransaction.TokenPrices,
                                   masterKeys: master.Keys,
                                   masterTransactionUnwrapTransactions: masterTransaction.UnwrapTransactions,
                                   masterTransactionWrapTransactions: masterTransaction.WrapTransactions,
@@ -63,63 +60,6 @@ class WalletController @Inject()(
           case baseException: BaseException => InternalServerError(baseException.failure.message)
         }
     }
-  }
-
-  def gasTokenPrice: EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {
-    withoutLoginAction { implicit request =>
-      Ok(utilities.NumericOperation.formatNumber(masterTransactionTokenPrices.Service.getLatestPrice))
-    }
-  }
-
-  def sendCoinForm(): Action[AnyContent] = withLoginActionAsync { implicit loginState =>
-    implicit request =>
-      val balance = blockchainBalances.Service.get(loginState.address)
-      (for {
-        balance <- balance
-      } yield Ok(views.html.wallet.sendCoin(balance = balance.fold(MicroNumber.zero)(_.coins.find(_.denom == constants.Blockchain.StakingToken).fold(MicroNumber.zero)(_.amount))))
-        ).recover {
-        case _: BaseException => Ok(views.html.wallet.sendCoin(SendCoin.form.withGlobalError(constants.Response.BALANCE_FETCH_FAILED.message), balance = MicroNumber.zero))
-      }
-  }
-
-  def sendCoin(): Action[AnyContent] = withLoginActionAsync { implicit loginState =>
-    implicit request =>
-      SendCoin.form.bindFromRequest().fold(
-        formWithErrors => {
-          Future(BadRequest(views.html.wallet.sendCoin(formWithErrors, formWithErrors.data.get(constants.FormField.SEND_COIN_AMOUNT.name).fold(MicroNumber.zero)(MicroNumber(_)))))
-        },
-        sendCoinData => {
-          val balance = blockchainBalances.Service.getTokenBalance(loginState.address)
-          val validateAndKey = masterKeys.Service.validateUsernamePasswordAndGetKey(username = loginState.username, address = loginState.address, password = sendCoinData.password)
-
-          def validateAndBroadcast(balance: MicroNumber, validatePassword: Boolean, key: master.Key) = {
-            val errors = Seq(
-              if (loginState.address == sendCoinData.toAddress) Option(constants.Response.FROM_AND_TO_ADDRESS_SAME) else None,
-              if (balance == MicroNumber.zero || balance <= sendCoinData.sendCoinAmount) Option(constants.Response.INSUFFICIENT_BALANCE) else None,
-              if (!validatePassword) Option(constants.Response.INVALID_PASSWORD) else None
-            ).flatten
-            if (errors.isEmpty) {
-              sendCoinTransactions.Utility.transaction(
-                fromAccountId = loginState.username,
-                fromAddress = loginState.address,
-                toAddress = sendCoinData.toAddress,
-                amount = Seq(Coin(denom = constants.Blockchain.StakingToken, amount = sendCoinData.sendCoinAmount)),
-                gasPrice = constants.Transaction.DefaultGasPrice,
-                ecKey = ECKey.fromPrivate(utilities.Secrets.decryptData(key.encryptedPrivateKey, sendCoinData.password)),
-              )
-            } else errors.head.throwBaseException()
-          }
-
-          (for {
-            balance <- balance
-            (validatePassword, key) <- validateAndKey
-            blockchainTransaction <- validateAndBroadcast(balance, validatePassword, key)
-          } yield PartialContent(views.html.transactionSuccessful(blockchainTransaction))
-            ).recover {
-            case baseException: BaseException => BadRequest(views.html.wallet.sendCoin(SendCoin.form.withGlobalError(baseException.failure.message), sendCoinData.sendCoinAmount))
-          }
-        }
-      )
   }
 
   def balance(address: String): EssentialAction = cached(req => utilities.Session.getSessionCachingKey(req), constants.CommonConfig.WebAppCacheDuration) {

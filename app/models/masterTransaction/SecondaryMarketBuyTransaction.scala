@@ -6,9 +6,9 @@ import exceptions.BaseException
 import models.blockchain.Split
 import models.blockchainTransaction.{UserTransaction, UserTransactions}
 import models.common.Coin
+import models.master
 import models.master.{NFT, SecondaryMarket}
 import models.traits._
-import models.{analytics, master}
 import org.bitcoinj.core.ECKey
 import play.api.Logger
 import play.api.db.slick.DatabaseConfigProvider
@@ -65,12 +65,9 @@ private[masterTransaction] object SecondaryMarketBuyTransactions {
 class SecondaryMarketBuyTransactions @Inject()(
                                                 protected val dbConfigProvider: DatabaseConfigProvider,
                                                 utilitiesOperations: utilities.Operations,
-                                                masterCollections: master.Collections,
                                                 masterNFTs: master.NFTs,
-                                                masterNFTProperties: master.NFTProperties,
                                                 masterNFTOwners: master.NFTOwners,
                                                 masterSecondaryMarkets: master.SecondaryMarkets,
-                                                collectionsAnalysis: analytics.CollectionsAnalysis,
                                                 utilitiesTransaction: utilities.Transaction,
                                                 utilitiesNotification: utilities.Notification,
                                                 userTransactions: UserTransactions,
@@ -138,32 +135,26 @@ class SecondaryMarketBuyTransactions @Inject()(
 
               def updateSecondaryMarket() = masterSecondaryMarkets.Service.markOnCompletion(secondaryMarketBuyTx.secondaryMarketId)
 
-              def collection(collectionId: String) = masterCollections.Service.tryGet(collectionId)
-
-              def onSuccessfulBuy(collection: master.Collection, secondaryMarket: SecondaryMarket) = masterNFTOwners.Service.onSuccessfulBuyFromSecondaryMarket(nftId = secondaryMarketBuyTx.nftId, collection = collection, totalSold = secondaryMarket.quantity, buyerId = secondaryMarketBuyTx.buyerId)
-
-              def updateAnalytics(secondaryMarket: SecondaryMarket) = collectionsAnalysis.Utility.onSuccessfulBuyFromMarket(secondaryMarket.collectionId, secondaryMarket.price, 1)
+              def onSuccessfulBuy(secondaryMarket: SecondaryMarket) = masterNFTOwners.Service.onSuccessfulBuyFromSecondaryMarket(nftId = secondaryMarketBuyTx.nftId, totalSold = secondaryMarket.quantity, buyerId = secondaryMarketBuyTx.buyerId)
 
               def sendNotifications(sellerId: String, nft: NFT) = {
-                utilitiesNotification.send(sellerId, constants.Notification.SELLER_TAKE_ORDER_SUCCESSFUL, nft.name)("")
-                utilitiesNotification.send(secondaryMarketBuyTx.buyerId, constants.Notification.BUYER_TAKE_ORDER_SUCCESSFUL, nft.name)(s"'${secondaryMarketBuyTx.buyerId}', '${constants.View.COLLECTED}'")
+                utilitiesNotification.send(sellerId, constants.Notification.SELLER_TAKE_ORDER_SUCCESSFUL, nft.address)("")
+                utilitiesNotification.send(secondaryMarketBuyTx.buyerId, constants.Notification.BUYER_TAKE_ORDER_SUCCESSFUL, nft.address)(s"'${secondaryMarketBuyTx.buyerId}', '${constants.View.COLLECTED}'")
               }
 
               for {
                 _ <- markSuccess
                 nft <- nft
                 secondaryMarket <- secondaryMarket
-                collection <- collection(nft.collectionId)
-                _ <- onSuccessfulBuy(collection, secondaryMarket)
+                _ <- onSuccessfulBuy(secondaryMarket)
                 _ <- updateSecondaryMarket()
                 _ <- sendNotifications(secondaryMarket.sellerId, nft)
-                _ <- updateAnalytics(secondaryMarket)
               } yield ()
             } else {
               val markFailed = Service.markFailed(secondaryMarketBuyTx.txHash)
               val nft = masterNFTs.Service.tryGet(secondaryMarketBuyTx.nftId)
 
-              def sendNotifications(nft: NFT) = utilitiesNotification.send(secondaryMarketBuyTx.buyerId, constants.Notification.BUYER_TAKE_ORDER_FAILED, nft.name)("")
+              def sendNotifications(nft: NFT) = utilitiesNotification.send(secondaryMarketBuyTx.buyerId, constants.Notification.BUYER_TAKE_ORDER_FAILED, nft.address)("")
 
               for {
                 _ <- markFailed

@@ -1,10 +1,10 @@
 @import controllers.actions.LoginState
-@import models.master.{Collection, SecondaryMarket}
 @import views.html.base.buttons._
 @import views.html.base.form._
 @import views.secondaryMarket.companion.Buy
+@import models.master.SecondaryMarket
 
-@(buyForm: Form[Buy.Data] = Buy.form, secondaryMarket: SecondaryMarket, collection: Collection)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: LoginState)
+@(buyForm: Form[Buy.Data] = Buy.form, secondaryMarket: SecondaryMarket)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: LoginState)
 
 @commonForm(constants.Form.BUY_FROM_SECONDARY_MARKET, buyForm) {
     <div id="secondaryMarketForm">
@@ -62,7 +62,7 @@
                                 <tr>
                                     <td class="text-left tableLabel">@Messages(constants.View.NFT_INVOICE_TABLE_FIELD_ROYALTY_FEES)</td>
                                     <td class="text-center tableValue">
-                                        <span class="royaltyFees">@(collection.getRoyaltyFee * 100)</span> %
+                                        <span class="royaltyFees">@(constants.Asset.Commission * 100)</span> %
                                     </td>
                                     <td class="text-center tableValue">
                                         <span class="quantity">00</span>

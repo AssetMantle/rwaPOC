@@ -87,7 +87,6 @@ class SettingController @Inject()(
               val addToMaster = masterKeys.Service.addManagedKey(
                 accountId = loginState.username,
                 address = wallet.address,
-                hdPath = wallet.hdPath,
                 password = addManagedKeyData.password,
                 privateKey = wallet.privateKey,
                 partialMnemonics = Option(wallet.mnemonics.take(wallet.mnemonics.length - constants.Blockchain.MnemonicShown)),

@@ -20,7 +20,6 @@ class AccountController @Inject()(
                                    withoutLoginActionAsync: WithoutLoginActionAsync,
                                    withoutLoginAction: WithoutLoginAction,
                                    masterAccounts: master.Accounts,
-                                   masterWallets: master.Wallets,
                                    masterKeys: master.Keys,
                                    masterTransactionSessionTokens: masterTransaction.SessionTokens,
                                    masterTransactionPushNotificationTokens: masterTransaction.PushNotificationTokens,
@@ -50,7 +49,7 @@ class AccountController @Inject()(
           val wallet = utilities.Wallet.getRandomWallet
 
           def addMasterAccount(checkVerifiedKeyExists: Boolean) = if (!checkVerifiedKeyExists) {
-            val addAccount = masterAccounts.Service.upsertOnSignUp(username = signUpData.username, lang = request.lang, accountType = constants.Account.Type.USER)
+            val addAccount = masterAccounts.Service.upsertOnSignUp(username = signUpData.username, email = signUpData.emailAddress, lang = request.lang, accountType = constants.Account.Type.CREATOR)
             val deleteUnverifiedKeys = masterKeys.Service.deleteUnverifiedKeys(signUpData.username)
 
             for {
@@ -62,7 +61,6 @@ class AccountController @Inject()(
           def addKey() = masterKeys.Service.addOnSignUp(
             accountId = signUpData.username,
             address = wallet.address,
-            hdPath = wallet.hdPath,
             partialMnemonics = wallet.mnemonics.take(wallet.mnemonics.length - constants.Blockchain.MnemonicShown),
             name = constants.Account.Key.DEFAULT_NAME,
             retryCounter = 0,
@@ -126,130 +124,56 @@ class AccountController @Inject()(
     implicit request =>
       SignInWithCallback.form.bindFromRequest().fold(
         formWithErrors => {
-          Future(BadRequest(views.html.account.signInWithCallback(formWithErrors, formWithErrors.data.getOrElse(constants.FormField.CALLBACK_URL.name, routes.PublicListingController.viewCollections().url))))
+          Future(BadRequest(views.html.account.signInWithCallback(formWithErrors, formWithErrors.data.getOrElse(constants.FormField.CALLBACK_URL.name, routes.SecondaryMarketController.view().url))))
         },
         signInData => {
           val masterAccount = masterAccounts.Service.tryGet(signInData.username)
-          val masterWallet = masterWallets.Service.getByAccountId(signInData.username)
-          val masterKey = masterKeys.Service.getActiveByAccountId(signInData.username)
+          val masterKey = masterKeys.Service.tryGetActive(signInData.username)
 
-          def verifyUpdateAndGetResult(account: master.Account, key: Option[master.Key], wallet: Option[master.Wallet]): Future[Result] = if (key.isEmpty) {
-            if (utilities.Secrets.verifyPassword(password = signInData.password, passwordHash = account.passwordHash, salt = account.salt, iterations = account.iterations)) {
-              val addKey = masterKeys.Service.addOnMigration(
-                accountId = signInData.username,
-                address = wallet.get.address,
-                hdPath = constants.Blockchain.DefaultHDPath,
-                partialMnemonics = wallet.get.partialMnemonics,
-                passwordHash = account.passwordHash,
-                salt = account.salt,
-                iterations = account.iterations,
-                name = constants.Account.Key.DEFAULT_NAME,
-                retryCounter = 0,
-                active = true,
-                backupUsed = false,
-                verified = wallet.get.verified)
-
-              def updateMasterAccount() = if (account.passwordHash.nonEmpty) masterAccounts.Service.update(account.copy(passwordHash = Array[Byte](), salt = Array[Byte](), iterations = 0)) else Future()
-
-              for {
-                _ <- addKey
-                _ <- updateMasterAccount()
-              } yield PartialContent(views.html.account.migrateWalletToKey(MigrateWalletToKey.form, username = signInData.username, address = wallet.get.address))
-            } else constants.Response.INVALID_USERNAME_OR_PASSWORD.throwBaseException()
-
-          } else {
-            val validPassword = utilities.Secrets.verifyPassword(password = signInData.password, passwordHash = key.get.passwordHash, salt = key.get.salt, iterations = key.get.iterations)
+          def verifyUpdateAndGetResult(account: master.Account, key: master.Key): Future[Result] = {
+            val validPassword = utilities.Secrets.verifyPassword(password = signInData.password, passwordHash = key.passwordHash, salt = key.salt, iterations = key.iterations)
 
             if (validPassword) {
-              if (key.get.encryptedPrivateKey.isEmpty) Future(PartialContent(views.html.account.migrateWalletToKey(username = signInData.username, address = key.get.address)))
-              else {
-                if (!key.get.verified.getOrElse(false)) {
-                  val wallet = utilities.Wallet.getRandomWallet
-                  val addKey = masterKeys.Service.addOnSignUp(
-                    accountId = signInData.username,
-                    address = wallet.address,
-                    hdPath = wallet.hdPath,
-                    partialMnemonics = wallet.mnemonics.take(wallet.mnemonics.length - constants.Blockchain.MnemonicShown),
-                    name = constants.Account.Key.DEFAULT_NAME,
-                    retryCounter = 0,
-                    active = true,
-                    backupUsed = false,
-                    verified = None)
+              if (!key.verified.getOrElse(false)) {
+                val wallet = utilities.Wallet.getRandomWallet
+                val addKey = masterKeys.Service.addOnSignUp(
+                  accountId = signInData.username,
+                  address = wallet.address,
+                  partialMnemonics = wallet.mnemonics.take(wallet.mnemonics.length - constants.Blockchain.MnemonicShown),
+                  name = constants.Account.Key.DEFAULT_NAME,
+                  retryCounter = 0,
+                  active = true,
+                  backupUsed = false,
+                  verified = None)
 
-                  def deleteUnverifiedKey() = masterKeys.Service.delete(accountId = key.get.accountId, address = key.get.address)
+                def deleteUnverifiedKey() = masterKeys.Service.delete(accountId = key.accountId, address = key.address)
 
-                  for {
-                    _ <- addKey
-                    _ <- deleteUnverifiedKey()
-                  } yield PartialContent(views.html.account.showWalletMnemonics(username = signInData.username, address = wallet.address, partialMnemonics = wallet.mnemonics.takeRight(constants.Blockchain.MnemonicShown)))
-                } else {
-                  implicit val optionalLoginState: Option[LoginState] = Option(LoginState(username = signInData.username, address = key.get.address, accountType = account.accountType))
-                  implicit val loginState: LoginState = LoginState(username = signInData.username, address = key.get.address, accountType = account.accountType)
-                  val pushNotificationTokenUpdate = masterTransactionPushNotificationTokens.Service.upsert(id = loginState.username, token = signInData.pushNotificationToken)
-                  val result = if (signInData.callbackUrl != "/") withUsernameToken.InternalRedirectOnSubmitForm(signInData.callbackUrl)
-                  else withUsernameToken.Ok(views.html.secondaryMarket.viewCollections())
-                  for {
-                    _ <- pushNotificationTokenUpdate
-                    result <- result
-                  } yield result
-                }
+                for {
+                  _ <- addKey
+                  _ <- deleteUnverifiedKey()
+                } yield PartialContent(views.html.account.showWalletMnemonics(username = signInData.username, address = wallet.address, partialMnemonics = wallet.mnemonics.takeRight(constants.Blockchain.MnemonicShown)))
+              } else {
+                implicit val optionalLoginState: Option[LoginState] = Option(LoginState(username = signInData.username, address = key.address, accountType = account.getAccountType()))
+                implicit val loginState: LoginState = LoginState(username = signInData.username, address = key.address, accountType = account.getAccountType())
+                val pushNotificationTokenUpdate = masterTransactionPushNotificationTokens.Service.upsert(id = loginState.username, token = signInData.pushNotificationToken)
+                val result = if (signInData.callbackUrl != "/") withUsernameToken.InternalRedirectOnSubmitForm(signInData.callbackUrl)
+                else withUsernameToken.Ok(views.html.secondaryMarket.view())
+                for {
+                  _ <- pushNotificationTokenUpdate
+                  result <- result
+                } yield result
               }
             } else constants.Response.INVALID_USERNAME_OR_PASSWORD.throwBaseException()
           }
 
           (for {
             masterAccount <- masterAccount
-            masterWallet <- masterWallet
             masterKey <- masterKey
-            result <- verifyUpdateAndGetResult(masterAccount, masterKey, masterWallet)
+            result <- verifyUpdateAndGetResult(masterAccount, masterKey)
             _ <- utilitiesNotification.send(accountID = signInData.username, notification = constants.Notification.LOGIN)()
           } yield result
             ).recover {
             case baseException: BaseException => NotFound(views.html.account.signInWithCallback(SignInWithCallback.form.withGlobalError(baseException.failure.message), signInData.callbackUrl))
-          }
-        }
-      )
-  }
-
-  def migrateWalletToKeyForm(): Action[AnyContent] = withoutLoginAction { implicit request =>
-    BadRequest
-  }
-
-  def migrateWalletToKey: Action[AnyContent] = withoutLoginActionAsync { implicit loginState =>
-    implicit request =>
-      MigrateWalletToKey.form.bindFromRequest().fold(
-        formWithErrors => {
-          Future(BadRequest(views.html.account.migrateWalletToKey(formWithErrors, formWithErrors.data.getOrElse(constants.FormField.USERNAME.name, ""), formWithErrors.data.getOrElse(constants.FormField.WALLET_ADDRESS.name, ""))))
-        },
-        migrateWalletToKeyData => {
-          val validateAndKey = masterKeys.Service.validateActiveKeyUsernamePasswordAndGet(migrateWalletToKeyData.username, password = migrateWalletToKeyData.password)
-          val account = masterAccounts.Service.tryGet(migrateWalletToKeyData.username)
-
-          def update(validated: Boolean, key: master.Key, account: master.Account) = if (validated) {
-            val wallet = Future(utilities.Wallet.getWallet(key.partialMnemonics.get ++ Seq(migrateWalletToKeyData.seed1, migrateWalletToKeyData.seed2, migrateWalletToKeyData.seed3, migrateWalletToKeyData.seed4), hdPath = key.hdPath.getOrElse(constants.Response.HD_PATH_NOT_FOUND.throwBaseException())))
-
-            def updateKey(wallet: utilities.Wallet) = masterKeys.Service.updateOnMigration(key = key, password = migrateWalletToKeyData.password, privateKey = wallet.privateKey)
-
-            def getResult(username: String, address: String) = {
-              implicit val optionalLoginState: Option[LoginState] = Option(LoginState(username = username, address = address, accountType = account.accountType))
-              implicit val loginState: LoginState = LoginState(username = username, address = address, accountType = account.accountType)
-              withUsernameToken.Ok(views.html.publicListing.viewCollections())
-            }
-
-            for {
-              wallet <- wallet
-              _ <- updateKey(wallet)
-              result <- getResult(username = migrateWalletToKeyData.username, address = wallet.address)
-            } yield result
-          } else constants.Response.INVALID_USERNAME_OR_PASSWORD.throwBaseException()
-
-          (for {
-            (validated, key) <- validateAndKey
-            account <- account
-            result <- update(validated, key, account)
-          } yield result
-            ).recover {
-            case baseException: BaseException => BadRequest(views.html.account.migrateWalletToKey(MigrateWalletToKey.form.withGlobalError(baseException.failure.message), migrateWalletToKeyData.username, migrateWalletToKeyData.walletAddress))
           }
         }
       )

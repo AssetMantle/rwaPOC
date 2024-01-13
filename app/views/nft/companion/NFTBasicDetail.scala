@@ -7,15 +7,22 @@ object NFTBasicDetail {
 
   val form: Form[Data] = Form(
     mapping(
-      constants.FormField.NFT_NAME.mapping,
+      constants.FormField.REGISTRATION_ID.mapping,
       constants.FormField.NFT_DESCRIPTION.mapping,
-      constants.FormField.NFT_TAGS.mapping,
-      constants.FormField.COLLECTION_ID.mapping,
+      constants.FormField.ADDRESS.mapping,
+      constants.FormField.POSTAL_CODE.mapping,
+      constants.FormField.TOTAL_AREA.mapping,
+      constants.FormField.GEO_LOCATION.mapping,
+      constants.FormField.SECRET_VALUE.mapping,
+      constants.FormField.TOTAL_UNITS.mapping,
+      constants.FormField.RENTED.mapping,
+      constants.FormField.RENTAL_AMOUNT.mapping,
+      constants.FormField.RENT_PERIOD.mapping,
+      constants.FormField.DOCUMENT_LINK.mapping,
       constants.FormField.NFT_ID.mapping,
-    )(Data.apply)(Data.unapply).verifying(constants.FormConstraint.NFTBasicDetailConstraint))
+      constants.FormField.SAVE_NFT_DRAFT.mapping,
+    )(Data.apply)(Data.unapply))
 
-  case class Data(name: String, description: String, tags: String, collectionId: String, nftId: String) {
-    def getTags: Option[Seq[String]] = if (this.tags == "") None else Option(tags.split(constants.NFT.Tags.Separator).filter(_ != ""))
-  }
+  case class Data(registrationId: String, description: String, address: String, postalCode: String, totalArea: BigDecimal, geoLocation: String, secretValue: String, totalUnits: Long, rented: Boolean, rentalAmount: BigDecimal, rentPeriod: Int, documentLink: String, nftId: String, saveNFTDraft: Boolean)
 
 }

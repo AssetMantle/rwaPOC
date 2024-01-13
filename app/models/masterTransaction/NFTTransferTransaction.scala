@@ -4,10 +4,10 @@ import constants.Scheduler
 import constants.Transaction.TxUtil
 import exceptions.BaseException
 import models.blockchainTransaction.{UserTransaction, UserTransactions}
+import models.master
 import models.master.NFT
 import models.masterTransaction.NFTTransferTransactions.NFTTransferTransactionTable
 import models.traits._
-import models.{analytics, master}
 import org.bitcoinj.core.ECKey
 import play.api.Logger
 import play.api.db.slick.DatabaseConfigProvider
@@ -61,12 +61,9 @@ private[masterTransaction] object NFTTransferTransactions {
 class NFTTransferTransactions @Inject()(
                                          protected val dbConfigProvider: DatabaseConfigProvider,
                                          utilitiesOperations: utilities.Operations,
-                                         masterCollections: master.Collections,
                                          masterNFTs: master.NFTs,
-                                         masterNFTProperties: master.NFTProperties,
                                          masterNFTOwners: master.NFTOwners,
                                          masterSecondaryMarkets: master.SecondaryMarkets,
-                                         collectionsAnalysis: analytics.CollectionsAnalysis,
                                          utilitiesTransaction: utilities.Transaction,
                                          utilitiesNotification: utilities.Notification,
                                          userTransactions: UserTransactions,
@@ -129,8 +126,8 @@ class NFTTransferTransactions @Inject()(
             val oldNFTOwner = if (nftTransferTx.toAccountId.isDefined) masterNFTOwners.Service.onSuccessfulNFTTransfer(nftId = nftTransferTx.nftId, fromOwnerID = nftTransferTx.fromId, quantity = nftTransferTx.quantity, toOwnerID = nftTransferTx.toAccountId.get) else Future()
 
             def sendNotifications(nft: NFT) = {
-              utilitiesNotification.send(nftTransferTx.fromId, constants.Notification.FROM_OWNER_NFT_TRANSFER_SUCCESSFUL, nft.name, nftTransferTx.toAccountId.getOrElse(nftTransferTx.toIdentityId))(s"${nftTransferTx.nftId}")
-              if (nftTransferTx.toAccountId.isDefined) utilitiesNotification.send(nftTransferTx.toAccountId.get, constants.Notification.TO_OWNER_NFT_TRANSFER_SUCCESSFUL, nft.name, nftTransferTx.fromId)(s"'${nftTransferTx.nftId}'") else Future()
+              utilitiesNotification.send(nftTransferTx.fromId, constants.Notification.FROM_OWNER_NFT_TRANSFER_SUCCESSFUL, nft.address, nftTransferTx.toAccountId.getOrElse(nftTransferTx.toIdentityId))(s"${nftTransferTx.nftId}")
+              if (nftTransferTx.toAccountId.isDefined) utilitiesNotification.send(nftTransferTx.toAccountId.get, constants.Notification.TO_OWNER_NFT_TRANSFER_SUCCESSFUL, nft.address, nftTransferTx.fromId)(s"'${nftTransferTx.nftId}'") else Future()
             }
 
             for {
@@ -143,7 +140,7 @@ class NFTTransferTransactions @Inject()(
             val markFailed = Service.markFailed(nftTransferTx.txHash)
             val nft = masterNFTs.Service.tryGet(nftTransferTx.nftId)
 
-            def sendNotifications(nft: NFT) = utilitiesNotification.send(nftTransferTx.fromId, constants.Notification.NFT_TRANSFER_FAILED, nft.name, nftTransferTx.toAccountId.getOrElse(nftTransferTx.toIdentityId))("")
+            def sendNotifications(nft: NFT) = utilitiesNotification.send(nftTransferTx.fromId, constants.Notification.NFT_TRANSFER_FAILED, nft.address, nftTransferTx.toAccountId.getOrElse(nftTransferTx.toIdentityId))("")
 
             for {
               _ <- markFailed

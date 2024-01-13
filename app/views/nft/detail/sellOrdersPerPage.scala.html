@@ -3,7 +3,7 @@
 @import models.master.SecondaryMarket
 @import views.html.base.buttons.commonTertiaryButton
 
-@(secondaryMarkets: Seq[SecondaryMarket], orders: Seq[Order], latestBlock: Int, tokenPrice: Double, page: Int)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, optionalLoginState: Option[LoginState])
+@(secondaryMarkets: Seq[SecondaryMarket], orders: Seq[Order], latestBlock: Int, page: Int)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, optionalLoginState: Option[LoginState])
 
 @if(secondaryMarkets.isEmpty) {
 

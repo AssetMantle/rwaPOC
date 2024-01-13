@@ -149,39 +149,6 @@ function truncate(message, fieldId, length) {
     $("#" + fieldId).html(newMessage);
 }
 
-function getDollarPrice(mntlPrice, nftId) {
-    route = jsRoutes.controllers.WalletController.gasTokenPrice();
-    $.ajax({
-        url: route.url,
-        type: route.type,
-        async: true,
-        statusCode: {
-            200: function (data) {
-                let salePrice = mntlPrice;
-                let currentMntlPrice = data;
-                $("#dollarPrice_" + nftId.split(".")[0]).text("($" + (salePrice * currentMntlPrice).toFixed(2) + ")");
-            }
-        }
-    });
-}
-
-function getNFTPrice(nftId) {
-    let route = jsRoutes.controllers.NFTController.price(nftId);
-    $.ajax({
-        url: route.url,
-        type: route.type,
-        async: true,
-        statusCode: {
-            200: function (data) {
-                if (data !== "--") {
-                    $("#price_" + nftId.split(".")[0]).html(data);
-                    getDollarPrice(data, nftId);
-                }
-            }
-        }
-    });
-}
-
 function commonCollectionCardInfo(collectionId, id) {
     let route = jsRoutes.controllers.CollectionController.commonCardInfo(collectionId, id);
     $.ajax({
@@ -207,7 +174,6 @@ function commonCollectionCardInfo(collectionId, id) {
                 }
             },
             400: function (data) {
-                console.log(data.responseText)
             }
         }
     });

@@ -1,7 +1,7 @@
 @import controllers.actions.LoginState
 @import views.html.base.buttons._
 
-@(totalCollected: Int, totalCollectionCreated: Int)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: Option[LoginState])
+@(totalCollected: Int)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: Option[LoginState])
 <div class="sticky-top item-sticky">
     <div class="card rightInfoCard">
         <div class="d-flex flex-column gap-3">
@@ -11,13 +11,6 @@
                     <div class="statsTitle">@Messages(constants.View.PROFILE_STATS_TITLE_TOTAL_NFT_COLLECTED)</div>
                 </div>
                 <div class="mt-1 statsValue">@totalCollected</div>
-            </div>
-            <div class="profileStatsBox">
-                <div class="d-flex gap-2 align-items-center">
-                    <img src="@routes.Assets.versioned("images/icon/totalCollectionWhite.png")" class="icon"/>
-                    <div class="statsTitle">@Messages(constants.View.PROFILE_STATS_TITLE_TOTAL_COLLECTION)</div>
-                </div>
-                <div class="mt-1 statsValue">@totalCollectionCreated</div>
             </div>
 @*            <div class="profileStatsBox">*@
 @*                <div class="d-flex gap-2 align-items-center">*@

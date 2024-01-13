@@ -70,8 +70,7 @@ class Secrets @Inject()(
 
     private def set(allKeys: Seq[Secret]): Unit = constants.Secret.setSecrets(
       memoSignerSeeds = getKeyValue(allKeys, memoKey).split(" "),
-      mantlePlaceSeeds = getKeyValue(allKeys, mantlePlaceKey).split(" "),
-      mintNFTCampaignSeeds = getKeyValue(allKeys, mintNFTCampaignWallet).split(" "),
+      mantlePlaceSeeds = getKeyValue(allKeys, mantlePlaceKey).split(" ")
     )
 
     def setAll(): Future[Unit] = {
@@ -90,6 +89,8 @@ class Secrets @Inject()(
         allKeys <- allKeys
       } yield set(allKeys)
     }
+
+
 
   }
 

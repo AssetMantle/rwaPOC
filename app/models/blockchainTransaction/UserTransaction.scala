@@ -108,7 +108,7 @@ class UserTransactions @Inject()(
 
     def getByHashes(txHashes: Seq[String]): Future[Seq[UserTransaction]] = filter(_.txHash.inSet(txHashes))
 
-    def getByAccountIdAndPageNumber(accountId: String, pageNumber: Int): Future[Seq[UserTransaction]] = filterAndSortWithPagination(_.accountId === accountId)(_.txHeight.?.getOrElse(Int.MaxValue).desc)(offset = (pageNumber - 1) * constants.CommonConfig.Pagination.CollectionsPerPage, limit = constants.CommonConfig.Pagination.CollectionsPerPage)
+    def getByAccountIdAndPageNumber(accountId: String, pageNumber: Int): Future[Seq[UserTransaction]] = filterAndSortWithPagination(_.accountId === accountId)(_.txHeight.?.getOrElse(Int.MaxValue).desc)(offset = (pageNumber - 1) * constants.CommonConfig.Pagination.NFTsPerPage, limit = constants.CommonConfig.Pagination.NFTsPerPage)
 
   }
 

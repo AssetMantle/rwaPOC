@@ -1,7 +1,7 @@
 @import controllers.actions.LoginState
 @import views.html.base.modal._
 
-@(nft: master.NFT, savedAsDraft: Boolean)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: LoginState)
+@(savedAsDraft: Boolean)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: LoginState)
 
 @if(savedAsDraft){
     @successModal(heading = constants.View.NFT_DRAFT_SUCCESS_TITLE, subHeading = constants.View.NFT_DRAFT_SUCCESS_SUBTITLE)
