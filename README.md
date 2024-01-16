@@ -13,8 +13,8 @@
     ```
 2. Install `Java 11.0.x`:
     1. `sdk install java 11.0.11.hs-adpt`
-3. Install `sbt 1.6.2` or the version mentioned in `project/build.properties`:
-    1. `sdk install sbt 1.6.2`
+3. Install `sbt 1.7.2` or the version mentioned in `project/build.properties`:
+    1. `sdk install sbt 1.7.2`
 4. Install `PostgreSQL 14`:
     1. [MacOS](https://postgresapp.com) (Make default username and password `postgres` and `postgres` respectively)
     2. Ubuntu:
@@ -24,7 +24,7 @@
     echo "deb http://apt.postgresql.org/pub/repos/apt/ ${RELEASE}"-pgdg main | sudo tee  /etc/apt/sources.list.d/pgdg.list
     sudo apt update
     sudo apt -y install postgresql-14
-    sudo su - postgres or psql -U postgres
+    sudo su - postgres  (if this doesn't work then: psql -U postgres)
     psql -c "alter user postgres with password 'postgres'"
     exit
    ```

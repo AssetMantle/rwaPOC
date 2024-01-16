@@ -1,22 +1,16 @@
 @import controllers.actions.LoginState
+@import models.master.NFTOwner
 
-@( nft: master.NFT, liked: Option[Boolean])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: Option[LoginState])
+@(nft: master.NFT, liked: Option[Boolean], nftOwner: Option[NFTOwner])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider, loginState: Option[LoginState])
 
 <div class="item item-center nftPreviewContainer">
     <div class="d-flex justify-content-between">
-@*        @if(collection.getWebsite.isDefined) {*@
-@*            <ul class="d-flex gap-3 rightOptions">*@
-@*                <li><a href="@collection.getWebsite.get" target="_blank">*@
-@*                    <i class="bi bi-globe2 iconDefault iconMedium icon"></i>*@
-@*                </a></li>*@
-@*            </ul>*@
-@*        }*@
     </div>
     <div class="mt-2 nftImagePreview">
         <a href="@nft.getS3Url" target="_blank">
             <div id="nftImage_@nft.id" class="position-relative">
-                @if(nft.isImageType) {
-                    <img src="@nft.getS3Url">
+            @if(nft.isImageType) {
+                <img src="@nft.getS3Url">
                 }
             </div>
         </a>
@@ -33,7 +27,7 @@
                 <div class="singleProperty">
                     <div class="propertyName">@Messages(constants.View.REGISTRATION_ID)</div>
                     <div class="mt-2 propertyValue">
-                        @nft.registrationId
+                    @nft.registrationId
                     </div>
                 </div>
                 <div class="singleProperty">
@@ -63,7 +57,11 @@
                 <div class="singleProperty">
                     <div class="propertyName">@Messages(constants.FormField.SECRET_VALUE.name)</div>
                     <div class="mt-2 propertyValue">
-                    ****
+                    @if(loginState.isDefined && nftOwner.isDefined && (loginState.get.username == nft.creatorId || loginState.get.username == nftOwner.get.ownerId)) {
+                        @nft.secretValue
+                    } else {
+                        *****
+                    }
                     </div>
                 </div>
                 <div class="singleProperty">
@@ -78,18 +76,20 @@
                     @nft.rented
                     </div>
                 </div>
-                <div class="singleProperty">
-                    <div class="propertyName">@Messages(constants.FormField.RENT_PERIOD.name)</div>
-                    <div class="mt-2 propertyValue">
-                    @nft.rentPeriodicity
+                @if(nft.rented) {
+                    <div class="singleProperty">
+                        <div class="propertyName">@Messages(constants.FormField.RENT_PERIOD.name)</div>
+                        <div class="mt-2 propertyValue">
+                        @nft.rentPeriodicity
+                        </div>
                     </div>
-                </div>
-                <div class="singleProperty">
-                    <div class="propertyName">@Messages(constants.FormField.RENTAL_AMOUNT.name)</div>
-                    <div class="mt-2 propertyValue">
-                    @nft.rentalAmount
+                    <div class="singleProperty">
+                        <div class="propertyName">@Messages(constants.FormField.RENTAL_AMOUNT.name)</div>
+                        <div class="mt-2 propertyValue">
+                        @nft.rentalAmount
+                        </div>
                     </div>
-                </div>
+                }
                 <div class="singleProperty">
                     <div class="propertyName">@Messages(constants.FormField.DOCUMENT_LINK.name)</div>
                     <div class="mt-2 propertyValue">

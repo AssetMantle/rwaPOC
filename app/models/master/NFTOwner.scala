@@ -116,8 +116,6 @@ class NFTOwners @Inject()(
 
     def get(nftId: String, ownerId: String): Future[Option[NFTOwner]] = getById(id1 = nftId, id2 = ownerId).map(_.map(_.deserialize))
 
-    def getOwners(nftId: String): Future[Seq[NFTOwner]] = filter(_.id1 === nftId).map(_.map(_.deserialize))
-
     def checkExists(nftId: String, ownerId: String): Future[Boolean] = exists(id1 = nftId, id2 = ownerId)
 
     def unlistFromSecondaryMarket(nft: NFT, ownerId: String, sellQuantity: BigInt): Future[Unit] = {
@@ -143,7 +141,9 @@ class NFTOwners @Inject()(
 
     def countOwners(nftId: String): Future[Int] = filterAndCount(_.nftId === nftId)
 
-    def getByNFTID(nftId: String): Future[NFTOwner] = filterHead(_.nftId === nftId).map(_.deserialize)
+    def getOwners(nftId: String): Future[Seq[String]] = filter(_.nftId === nftId).map(_.map(_.ownerId))
+
+    def getByNFTIDAndOwner(nftId: String, ownerId: String): Future[Option[NFTOwner]] = filter(x => x.nftId === nftId && x.ownerId === ownerId).map(_.map(_.deserialize()).headOption)
 
     def onSuccessfulNFTTransfer(nftId: String, fromOwnerID: String, quantity: Long, toOwnerID: String): Future[Unit] = {
       val fromNFTOwner = tryGet(nftId = nftId, ownerId = fromOwnerID)

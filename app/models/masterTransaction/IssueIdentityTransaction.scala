@@ -4,6 +4,7 @@ import constants.Scheduler
 import constants.Transaction.TxUtil
 import exceptions.BaseException
 import models.blockchainTransaction.{AdminTransaction, AdminTransactions}
+import models.common.Coin
 import models.master.Key
 import models.masterTransaction.IssueIdentityTransactions.IssueIdentityTransactionTable
 import models.traits._
@@ -12,6 +13,7 @@ import play.api.Logger
 import play.api.db.slick.DatabaseConfigProvider
 import schema.id.base.IdentityID
 import slick.jdbc.H2Profile.api._
+import utilities.MicroNumber
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
@@ -92,15 +94,18 @@ class IssueIdentityTransactions @Inject()(
     implicit val txUtil: TxUtil = TxUtil("ISSUE_IDENTITY", 120000)
 
     def transaction(accountIdAddress: Map[String, Seq[String]]): Future[AdminTransaction] = {
-      val messages = accountIdAddress.keys.map(x => utilities.BlockchainTransaction.getIssueIdentityMsgWithAuthentication(
-        fromAddress = constants.Secret.issueIdentityWallet.address,
-        classificationID = constants.Transaction.IdentityClassificationID,
-        fromID = constants.Transaction.MantlePlaceIdentityID,
-        immutableMetas = utilities.Identity.getImmutableMetas(x),
-        mutableMetas = utilities.Identity.getMutableMetas(accountIdAddress.getOrElse(x, Seq())),
-        immutableMesas = utilities.Identity.getImmutableMesas,
-        mutableMesas = utilities.Identity.getMutableMesas,
-      )).toSeq
+      val messages = accountIdAddress.keys.map(x =>
+        accountIdAddress.getOrElse(x, Seq()).map(y => utilities.BlockchainTransaction.getSendCoinMsgAsAny(fromAddress = constants.Secret.issueIdentityWallet.address, toAddress = y, amount = Seq(Coin(denom = constants.Blockchain.StakingToken, amount = MicroNumber(1000)))))
+          :+ utilities.BlockchainTransaction.getIssueIdentityMsgWithAuthentication(
+          fromAddress = constants.Secret.issueIdentityWallet.address,
+          classificationID = constants.Transaction.IdentityClassificationID,
+          fromID = constants.Transaction.MantlePlaceIdentityID,
+          immutableMetas = utilities.Identity.getImmutableMetas(x),
+          mutableMetas = utilities.Identity.getMutableMetas(accountIdAddress.getOrElse(x, Seq())),
+          immutableMesas = utilities.Identity.getImmutableMesas,
+          mutableMesas = utilities.Identity.getMutableMesas,
+        )
+      ).toSeq.flatten
 
       def masterTxFunc(txHash: String) = Service.addWithNoneStatus(txHash = txHash, accountIds = accountIdAddress.keys.toSeq)
 

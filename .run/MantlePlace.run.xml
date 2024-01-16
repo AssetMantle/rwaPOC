@@ -14,15 +14,15 @@
         <entry key="APP_VERSION" value="v0.1.11" />
         <entry key="BLOCKCHAIN_CHAIN_ID" value="mantle-1" />
         <entry key="BLOCKCHAIN_NAME" value="AssetMantle Testnet" />
-        <entry key="BLOCKCHAIN_REST" value="http://localhost:1317" />
-        <entry key="BLOCKCHAIN_RPC" value="http://localhost:26657" />
+        <entry key="BLOCKCHAIN_REST" value="http://13.201.129.191:1317" />
+        <entry key="BLOCKCHAIN_RPC" value="http://13.201.129.191:26657" />
         <entry key="BLOCKCHAIN_STAKING_DENOM" value="umntl" />
         <entry key="BLOCKCHAIN_UPGRADE_HEIGHT" value="1" />
         <entry key="COLLECTION_PATH" value="$USER_HOME$/collections" />
         <entry key="ENABLE_NFT_MINT_AIRDROP" value="false" />
         <entry key="EXPLORER_POSTGRES_DB" value="assetMantle" />
         <entry key="EXPLORER_POSTGRES_PASSWORD" value="assetMantle" />
-        <entry key="EXPLORER_POSTGRES_URL" value="localhost:5432" />
+        <entry key="EXPLORER_POSTGRES_URL" value="13.201.129.191:5432" />
         <entry key="EXPLORER_POSTGRES_USER" value="assetMantle" />
         <entry key="IPFS_DOWNLOAD_ACCESS_TOKEN" value="fvrEF-HHdNz0-SPqNqnxcUzSBGvmeXJ1dxrNFiv1nksI-e0DOoEI7Uz3pfT6VxDp" />
         <entry key="IPFS_DOWNLOAD_END_POINT" value="https://lavender-important-scorpion-842.mypinata.cloud/ipfs" />
@@ -32,11 +32,11 @@
         <entry key="KEY_STORE_PATH" value="$USER_HOME$/AssetMantleKeyStore" />
         <entry key="POSTGRES_DB" value="rwaPOC" />
         <entry key="POSTGRES_PASSWORD" value="rwaPOC" />
-        <entry key="POSTGRES_URL" value="localhost:5432" />
+        <entry key="POSTGRES_URL" value="13.201.129.191:5432" />
         <entry key="POSTGRES_USER" value="rwaPOC" />
         <entry key="ROOT_FILE_PATH" value="$USER_HOME$/" />
         <entry key="SECRET" value="Jj%Sr!xrC9G!xKS5^yF!UPYa!DkWo@N*R^xjF6vC@nAL@zaD24WqHfbTZ^QbYFsj^^j9LExb3@Rt9Yfj!4amcHY%5$bC#SU$DorA6Hv6h2i%bh%M$XFfDVVpW!fJd" />
-        <entry key="SITE_URL" value="http://localhost:9000" />
+        <entry key="SITE_URL" value="http://13.201.129.191:9000" />
       </map>
     </option>
     <option name="play2IsNonDefaultInstallDirUsed" value="false" />

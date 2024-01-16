@@ -6,7 +6,7 @@ object Asset {
 
   val BondAmount = 2225L
 
-  val Commission: BigDecimal = 0.02
+  val Commission: BigDecimal = 0.0
 
   object PROPERTY_TYPE {
     val COMMERCIAL = "COMMERCIAL"
