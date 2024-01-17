@@ -23,6 +23,13 @@
     --card-dark: #030301;
     --accent-blue: #6FB4B5;
     --background-dark: #E6E6E6;
+
+    /* JS Input Validation colors */
+
+    --not-required-empty-disable-label: var(--button-text);
+    --not-required-empty-disable-input: var(--card-color);
+    --not-required-empty-disable-entering-label: var(--card-color);
+
     --font-type-1: 'Work Sans';
     --font-type-2: 'Lato';
     --size-bezel: .5rem;
@@ -269,7 +276,7 @@ body{
     background-position: 3px 2px;
 }
 .error-info .error-icon.active + .error-text{
-    color: var(--mantle-off-white);
+    color: var(--card-color);
 }
 .available-username{
     font-size: 16px;
