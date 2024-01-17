@@ -14,17 +14,17 @@
   border-radius: 20px;
   padding: 20px;
   .title{
-    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--mantle-off-white));
+    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
     text-transform: capitalize;
   }
   .description{
-    @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--gray));
+    @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--button-text));
     margin-top: 20px;
   }
   .separator{
     height: 2px;
     width: calc(100% + 40px);
-    background-color: #383838;
+    background-color: var(--gray);
     margin: 20px -20px 20px;
   }
   a, .icon{
@@ -58,10 +58,10 @@
     }
   }
   .analysisTitle{
-    @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--gray));
+    @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--card-color));
   }
   .analysisValue{
-    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--mantle-off-white));
+    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--button-text));
   }
   .priceHolder{
     .nft-mantle-price{
@@ -78,7 +78,7 @@
   .mintedNftWeightage{
     margin-top: 14px;
     .progressBar {
-      background-color: var(--line-2);
+      background-color: var(--inactive-gray);
       border-radius: 10px;
       span {
         background-color: var(--default);
@@ -91,7 +91,7 @@
     }
   }
   .nft-likes{
-    color: var(--gray);
+    color: var(--card-color);
   }
   .badge{
     @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--default));
@@ -101,7 +101,7 @@
 .collectionContainer{
   width: 100%;
   height: fit-content;
-  background-color: var(--card-color);
+  background-color: var(--inactive-gray);
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 100px;
@@ -110,13 +110,13 @@
 .nftPreviewContainer{
   width: 100%;
   height: fit-content;
-  background-color: var(--card-color);
+  //background-color: var(--card-color);
   border-radius: 20px;
   overflow: hidden;
   //padding: 20px;
   .leftOptions{
     li{
-      @include setFont(var(--font-type-1), normal, 500, 14px, 17px, var(--gray));
+      @include setFont(var(--font-type-1), normal, 500, 14px, 17px, var(--button-text));
       text-transform: capitalize;
       &.active{
         @include setFont(var(--font-type-1), normal, 700, 14px, 17px, var(--default));
@@ -132,9 +132,9 @@
     }
   }
   .nftImagePreview{
-    background: var(--card-dark);
+    //background: var(--card-dark);
     border-radius: 10px;
-    padding: 20px;
+    //padding: 20px;
     div{
       overflow: hidden;
       img{
@@ -149,12 +149,12 @@
     }
   }
   .nftPropertyContainer{
-    background: var(--card-dark);
+    //background: var(--card-dark);
     border-radius: 10px;
     margin-top: 20px;
-    padding: 20px;
+    //padding: 20px;
     .title{
-      @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--mantle-off-white));
+      @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
       text-transform: capitalize;
       .dropdownIcon {
         display: inline-block;
@@ -169,7 +169,7 @@
       padding-right: 20px;
       margin-top: 20px;
       .singleProperty{
-        background: var(--popup-bg);
+        //background: var(--popup-bg);
         border: 1px solid var(--dark);
         border-radius: 12px;
         padding: 12px 24px;
@@ -178,25 +178,25 @@
           text-transform: uppercase;
         }
         .propertyValue{
-          @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--mantle-off-white));
+          @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
         }
         .propertyRarity{
-          @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--gray));
+          @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--button-text));
         }
       }
     }
   }
   .nftOffersContainer{
-    background: var(--card-dark);
+    //background: var(--card-dark);
     border-radius: 10px;
     margin-top: 20px;
     padding: 20px;
     .title{
-      @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--mantle-off-white));
+      @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
       text-transform: capitalize;
       .cardLink{
-        @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--mantle-off-white));
-        background: radial-gradient(50% 50% at 50% 50%, #FFC640 47.4%, #F2AF13 100%);
+        @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--button-text));
+        background: var(--radial);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -509,11 +509,11 @@
 .centerContainer {
   width: 100%;
   height: fit-content;
-  background-color: var(--card-color);
+  background-color: var(--inactive-gray);
   border-radius: 20px;
 
   .centerCard {
-    background-color: var(--card-color);
+    background-color: var(--inactive-gray);
     padding: 20px 20px 20px 20px;
     border-radius: 20px;
 
