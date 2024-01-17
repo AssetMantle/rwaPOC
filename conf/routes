@@ -44,11 +44,11 @@ GET         /wrappedTokenBalance                    controllers.WalletController
 GET         /walletBalance                          controllers.WalletController.balance(address: String)
 GET         /walletPopupKeys                        controllers.WalletController.walletPopupKeys()
 
-GET         /collectedSection                       controllers.CollectedController.collectedSection(accountId: String)
+GET         /collected                              controllers.CollectedController.collectedSection(accountId: String)
 GET         /collectedNFTsPerPage                   controllers.CollectedController.nftsPerPage(accountId: String, pageNumber: Int)
 GET         /collectedCollectionTopRightCard        controllers.CollectedController.sectionTopRightCard(accountID: String)
 
-GET         /wishlistSection                        controllers.WishlistController.wishlistSection(accountId: String)
+GET         /wishlist                               controllers.WishlistController.wishlistSection(accountId: String)
 GET         /wishListNFTsPerPage                    controllers.WishlistController.nftsPerPage(accountId: String, pageNumber: Int)
 
 POST        /addToWishList                          controllers.WishlistController.add()
@@ -62,7 +62,7 @@ GET         /nftDetailViewLeftCards                 controllers.NFTController.de
 GET         /nftInfo                                controllers.NFTController.info(nftId: String)
 GET         /nftDetailViewRightCards                controllers.NFTController.detailViewRightCards(nftId: String)
 GET         /likesCounter                           controllers.NFTController.likesCounter(nftId: String)
-GET         /createdSection                         controllers.NFTController.createdSection(accountId: String)
+GET         /created                                controllers.NFTController.createdSection(accountId: String)
 GET         /createdNFTsPerPage                     controllers.NFTController.createdNFTsPerPage(accountId: String, pageNumber: Int)
 
 # Create NFT
@@ -126,7 +126,7 @@ POST        /cancelSecondaryMarket                  controllers.SecondaryMarketC
 GET         /buySecondaryMarket                     controllers.SecondaryMarketController.buyForm(secondaryMarketId: String)
 POST        /buySecondaryMarket                     controllers.SecondaryMarketController.buy()
 
-GET         /listedSection                          controllers.SecondaryMarketController.listedSection(accountId: String)
+GET         /orders                                 controllers.SecondaryMarketController.listedSection(accountId: String)
 GET         /listedNFTsPerPage                      controllers.SecondaryMarketController.listedNFTsPerPage(accountId: String, pageNumber: Int)
 
 GET         /unwrapToken                            controllers.WalletController.unwrapTokenForm()

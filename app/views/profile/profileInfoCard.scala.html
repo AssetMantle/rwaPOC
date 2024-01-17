@@ -11,7 +11,7 @@
             </div>
             <div class="profileImage">
                 <img src="@routes.Assets.versioned("images/profile/tier_0.png")"/>
-                @if(accountType == constants.Account.Type.CREATOR.name) {
+                @if(accountType == constants.Account.Type.INSTITUTIONAL_INVESTOR.name || accountType == constants.Account.Type.INDIVIDUAL_INVESTOR.name) {
                     <img src="@routes.Assets.versioned("images/profile/accountTypeBadge_1.png")" class="accountTypeBadge"/>
                 }
             </div>

@@ -67,7 +67,7 @@ class IndexController @Inject()(
     adminTransactions.Utility.scheduler,
     userTransactions.Utility.scheduler,
     // history
-    //    historyMasterSecondaryMarkets.Utility.scheduler,
+    historyMasterSecondaryMarkets.Utility.scheduler,
     // masterTransaction
     issueIdentityTransactions.Utility.scheduler,
     mintAssetTransactions.Utility.scheduler,

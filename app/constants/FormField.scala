@@ -148,6 +148,7 @@ object FormField {
   // SelectFormField
   // Not adding Height type for user
   val COLLECTION_PROPERTY_TYPE: SelectFormField = SelectFormField("COLLECTION_PROPERTY_TYPE", Seq(constants.NFT.Data.STRING, constants.NFT.Data.NUMBER, constants.NFT.Data.DECIMAL, constants.NFT.Data.BOOLEAN))
+  val SELECT_ACCOUNT_TYPE: SelectFormField = SelectFormField("SELECT_ACCOUNT_TYPE", Seq(constants.Account.Type.LISTER.name, constants.Account.Type.INSTITUTIONAL_INVESTOR.name, constants.Account.Type.INDIVIDUAL_INVESTOR.name, constants.Account.Type.ANALYST.name))
 
   // CustomSelect
   val SELECT_WHITELIST_ID: CustomSelectFormField = CustomSelectFormField("SELECT_WHITELIST_ID")

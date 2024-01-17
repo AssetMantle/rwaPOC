@@ -79,7 +79,7 @@ class NFTController @Inject()(
     withoutLoginActionAsync { implicit loginState =>
       implicit request =>
         val nft = masterNFTs.Service.tryGet(nftId)
-        val owner = if (loginState.isDefined) masterNFTOwners.Service.tryGet(nftId, loginState.get.username).map(x => Option(x)) else Future(None)
+        val owner = if (loginState.isDefined) masterNFTOwners.Service.getByNFTIDAndOwner(nftId, loginState.get.username) else Future(None)
         val liked = loginState.fold[Future[Option[Boolean]]](Future(None))(x => masterWishLists.Service.checkExists(accountId = x.username, nftId = nftId).map(Option(_)))
 
         (for {

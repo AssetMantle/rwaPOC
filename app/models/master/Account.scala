@@ -94,17 +94,6 @@ class Accounts @Inject()(
     //      } yield (utilities.Secrets.verifyPassword(password = password, passwordHash = account.passwordHash, salt = account.salt, iterations = account.iterations), accounte)
     //    }
 
-    def updateAccountToCreator(accountId: String): Future[Unit] = {
-      val account = tryGetById(accountId)
-
-      def update(account: Account) = if (!account.isCreator) updateById(account.copy(accountType = constants.Account.Type.CREATOR.id)) else Future()
-
-      for {
-        account <- account
-        _ <- update(account)
-      } yield ()
-    }
-
     def tryGet(username: String): Future[Account] = tryGetById(username)
 
     def get(username: String): Future[Option[Account]] = getById(username)

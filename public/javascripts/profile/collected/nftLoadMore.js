@@ -20,7 +20,7 @@ function loadMoreNFTs(accountId) {
         pageNumber = pageNumber + 1;
     }
     if ($(".noNFT").length === 0) {
-        let route = jsRoutes.controllers.CollectedController.collectionNFTsPerPage(accountId, pageNumber);
+        let route = jsRoutes.controllers.CollectedController.nftsPerPage(accountId, pageNumber);
         $.ajax({
             url: route.url,
             type: route.type,
@@ -104,7 +104,7 @@ function loadCollectedNftOnScroll(accountId) {
 }
 
 function loadFirstCollectedNFTs(accountId) {
-    loadFirstNFTBulk('nftsPerPage', jsRoutes.controllers.CollectedController.collectionNFTsPerPage(`${accountId}`, 1));
+    loadFirstNFTBulk('nftsPerPage', jsRoutes.controllers.CollectedController.nftsPerPage(`${accountId}`, 1));
     if ($(document).height() > 900) {
         setTimeout(() => {
             loadCollectedNftOnScroll(`${accountId}`)

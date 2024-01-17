@@ -7,7 +7,7 @@
         <div class="profiles-container">
             <div class="nft-list">
                 <div class="nft-list-container">
-                    <div id="nftsPerPage" class="row m-0 nftsPerPage">
+                    <div id="wishlistNFTsPerPage" class="row m-0 nftsPerPage">
                     </div>
                 </div>
                     <!-- Loader -->
@@ -24,7 +24,6 @@
 <script src="@utilities.PublicResource.getVersionedRoute("javascripts/profile/wishlist/nftLoadMore.js")" type="text/javascript"></script>
 <script>
      loadFirstWishlistNFTs('@accountId');
-     checkAndPushState(jsRoutes.controllers.WishlistController.viewCollectionNFTs('@accountId').url, ('@accountId' + '/WISHLIST/'), "wishListCollection");
      window.onscroll = function () {
          loadWishlistNftOnScroll('@{accountId}');
      }

@@ -17,8 +17,8 @@
                         constants.View.TRANSACTIONS -> (routes.javascript.ProfileController.transactionsSection, JavaScript(s"changeProfileStateOnSwitcher('$accountId', '${constants.View.TRANSACTIONS}')")),
                     ),
                     activeTab,
-                    Symbol(constants.View.COLLECTED + "_PARAMETERS") -> s"'${accountId}'",
                     Symbol(constants.View.CREATED + "_PARAMETERS") -> s"'${accountId}'",
+                    Symbol(constants.View.COLLECTED + "_PARAMETERS") -> s"'${accountId}'",
                     Symbol(constants.View.WISHLIST + "_PARAMETERS") -> s"'${accountId}'",
                     Symbol(constants.View.LISTED + "_PARAMETERS") -> s"'${accountId}'"
                 )
@@ -31,7 +31,6 @@
                     ),
                     activeTab,
                     Symbol(constants.View.COLLECTED + "_PARAMETERS") -> s"'${accountId}'",
-                    Symbol(constants.View.CREATED + "_PARAMETERS") -> s"'${accountId}'",
                     Symbol(constants.View.WISHLIST + "_PARAMETERS") -> s"'${accountId}'",
                     Symbol(constants.View.LISTED + "_PARAMETERS") -> s"'${accountId}'"
                 )

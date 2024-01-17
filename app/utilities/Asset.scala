@@ -8,7 +8,6 @@ import schema.qualified.{Immutables, Mutables}
 
 object Asset {
 
-  val bondAmountMetaProperty: Property = MetaProperty(schema.constants.Properties.BondAmountProperty.id, NumberData(4096L))
   private val others = "/others/"
   private val nfts = "/nfts/"
 

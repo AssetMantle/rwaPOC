@@ -49,7 +49,7 @@ class AccountController @Inject()(
           val wallet = utilities.Wallet.getRandomWallet
 
           def addMasterAccount(checkVerifiedKeyExists: Boolean) = if (!checkVerifiedKeyExists) {
-            val addAccount = masterAccounts.Service.upsertOnSignUp(username = signUpData.username, email = signUpData.emailAddress, lang = request.lang, accountType = constants.Account.Type.CREATOR)
+            val addAccount = masterAccounts.Service.upsertOnSignUp(username = signUpData.username, email = signUpData.emailAddress, lang = request.lang, accountType = constants.Account.Type.getAccountType(signUpData.accountType))
             val deleteUnverifiedKeys = masterKeys.Service.deleteUnverifiedKeys(signUpData.username)
 
             for {

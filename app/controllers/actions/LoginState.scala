@@ -4,9 +4,7 @@ import constants.Account.AccountType
 
 case class LoginState(username: String, address: String, accountType: AccountType) {
 
-  def isUser: Boolean = this.accountType.id == constants.Account.Type.USER.id
-
-  def isCreator: Boolean = this.accountType.id == constants.Account.Type.CREATOR.id
+  def isCreator: Boolean = this.accountType.id == constants.Account.Type.INSTITUTIONAL_INVESTOR.id || this.accountType.id == constants.Account.Type.INDIVIDUAL_INVESTOR.id
 
   def getIdentityId: String = utilities.Identity.getMantlePlaceIdentityID(this.username).asString
 

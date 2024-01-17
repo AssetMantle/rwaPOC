@@ -104,7 +104,7 @@ function loadWishlistNftOnScroll(accountId) {
 }
 
 function loadFirstWishlistNFTs(accountId) {
-    loadFirstNFTBulk('nftsPerPage', jsRoutes.controllers.WishlistController.nftsPerPage(`${accountId}`, 1));
+    loadFirstNFTBulk('wishlistNFTsPerPage', jsRoutes.controllers.WishlistController.nftsPerPage(`${accountId}`, 1));
     if ($(document).height() > 900) {
         setTimeout(() => {
             loadWishlistNftOnScroll(`${accountId}`)

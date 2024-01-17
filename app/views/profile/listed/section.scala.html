@@ -24,7 +24,6 @@
 <script src="@utilities.PublicResource.getVersionedRoute("javascripts/profile/listed/nftLoadMore.js")" type="text/javascript"></script>
 <script>
         loadFirstListedNFTs('@accountId');
-        checkAndPushState(jsRoutes.controllers.SecondaryMarketController.viewListedCollectionNFTs('@accountId').url, ('@accountId' + '/LISTED/'), "listedCollection");
         window.onscroll = function () {
             loadListedNftOnScroll('@{accountId}');
         }
