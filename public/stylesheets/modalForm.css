@@ -372,8 +372,7 @@
     cursor: pointer;
 }
 .form-copy-icon:hover{
-    background-color: var(--default);
-    color: var(--card-dark);
+    background-color: var(--header-bg);
 }
 
 /* Form Information Message */

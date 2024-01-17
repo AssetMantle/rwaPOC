@@ -22,7 +22,7 @@
   .modal-overlay {
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(121, 121, 121, 0.6);
     opacity: 0;
     visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -55,6 +55,7 @@
   font-size: 45px;
   line-height: 0px;
   box-shadow: none !important;
+  opacity: 1 !important;
 }
 
 .modal-header {
@@ -136,7 +137,7 @@
 }
 
 .header-with-icon .form-top .back-button-icon:hover {
-  background-color: var(--popup-stroke);
+  background-color: var(--header-bg);
 }
 
 // Sign Up
