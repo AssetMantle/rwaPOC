@@ -246,7 +246,7 @@
 
 /* Form Address Box */
 .form-address-box{
-    background-color: var(--header-bg);
+    background-color: var(--inactive-gray);
     border-radius: 16px;
     padding: 12px 14px;
     margin-top: 30px;
@@ -261,19 +261,19 @@
 }
 .form-address-box .address-box-label{
     text-align: right;
-    color: var(--inactive-gray);
+    color: var(--card-color);
     margin-right:10px;
     display: flex;
     align-items: center;
     justify-content: end;
 }
 .form-address-box .address-box-text{
-    color: var(--mantle-off-white);
+    color: var(--gray);
     display: flex;
     align-items: center;
 }
 .form-address-box .address-box-text .username-data{
-    color: var(--mantle-off-white);
+    color: var(--button-text);
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 350px;
@@ -296,7 +296,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     background-color: var(--popup-bg);
-    color: var(--inactive-gray);
+    color: var(--gray);
     position: relative;
     top: 10px;
     opacity: 0;
@@ -333,7 +333,7 @@
     font-weight: 400;
     font-size: 14px;
     margin-top: 10px;
-    color: var(--inactive-gray);
+    color: var(--gray);
 }
 .sub-heading-link .link{
     font-style: normal;
@@ -351,7 +351,7 @@
     font-weight: 700;
     font-size: 14px;
     text-transform: capitalize;
-    color: var(--text-medium);
+    color: var(--branded-dark);
     display: flex;
     align-items: center;
     margin-top: 40px;
@@ -372,7 +372,8 @@
     cursor: pointer;
 }
 .form-copy-icon:hover{
-    background-color: var(--popup-stroke);
+    background-color: var(--default);
+    color: var(--card-dark);
 }
 
 /* Form Information Message */
@@ -516,7 +517,7 @@
     border: 2px solid var(--inactive-gray);
     border-radius: var(--size-radius);
     padding: 10px 12px;
-    color: var(--mantle-off-white);
+    color: var(--card-color);
     background: transparent;
     margin-top: 8px;
     font-family: var(--font-type-2);
@@ -527,14 +528,14 @@
     outline: none;
 }
 .commonField input::placeholder{
-    color: var(--inactive-gray);
+    color: var(--gray);
     text-transform: capitalize;
 }
 .commonField input:focus{
     border-color: var(--dark);
 }
 .commonField input:not(:focus){
-    color: var(--inactive-gray);
+    color: var(--gray);
 }
 
 /* Form Fields */
@@ -548,7 +549,7 @@
     font-weight: 700;
     font-size: 14px;
     line-height: 17px;
-    color: var(--inactive-gray);
+    color: var(--card-color);
 }
 #formBody dd input[type=text],
 #formBody dd input[type=password],
@@ -562,9 +563,9 @@
     box-sizing: border-box;
     display: block;
     width: 100%;
-    border: 1px solid var(--inactive-gray);
+    border: 1px solid var(--default);
     padding: calc(var(--size-bezel) * 2) 12px;
-    color: var(--mantle-off-white);
+    color: var(--card-color);
     background: transparent;
     border-radius: var(--size-radius);
     font-size: 14px;
@@ -590,8 +591,8 @@
 #formBody dd select:not(:focus),
 #formBody dd textarea:not(:focus)
 {
-    color: var(--inactive-gray);
-    border-color: var(--gray) !important;
+    color: var(--card-color);
+    border-color: var(--button-text) !important;
 }
 #formBody dd textarea{
     height: 120px;
@@ -628,7 +629,7 @@
     z-index: 950;
 }
 #formBody button:hover{
-    box-shadow: 0px 0px 10px rgba(255, 201, 66, 0.5);
+    box-shadow: 0px 0px 10px var(--disable-yellow);
 }
 #formBody button.disable{
     background: var(--disable-yellow) !important;
@@ -661,7 +662,7 @@
     z-index: 950;
 }
 #formBody button:hover{
-    box-shadow: 0px 0px 10px rgba(255, 201, 66, 0.5);
+    box-shadow: 0px 0px 10px var(--disable-yellow);
 }
 #formSubmitButton{
     display: flex;
@@ -687,7 +688,7 @@ button.form-primary-button{
     z-index: 950;
 }
 button.form-primary-button:hover{
-    box-shadow: 0px 0px 10px rgba(255, 201, 66, 0.5);
+    box-shadow: 0px 0px 10px var(--disable-yellow);
 }
 button.form-secondary-button{
     font-size: 16px;
@@ -723,7 +724,7 @@ button.form-secondary-button{
 /* Regx msg */
 dl .info {
     background-color: var(--tooltip-bg);
-    color: var(--gray);
+    color: var(--card-color);
     text-align: center;
     border-radius: 6px;
     position: relative;
@@ -813,7 +814,7 @@ dl .info:after {
 .am-checkbox{
     -webkit-appearance: none;
     appearance: none;
-    background-color: var(--popup-bg);
+    background-color: transparent;
     margin: 0;
     font: inherit;
     width: 18px;
@@ -841,7 +842,7 @@ dl .info:after {
 .terms-condition-box{
     width: 100%;
     height: 450px;
-    background: #030301;
+    /*background: #030301;*/
     border-radius: 10px;
     overflow-y: auto;
     margin-top: 12px;
@@ -850,7 +851,7 @@ dl .info:after {
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
-    color: var(--mantle-off-white);
+    color: var(--card-color);
     padding: 24px 16px 24px 24px;
 
     scrollbar-width: auto; /* Firefox */
@@ -876,7 +877,7 @@ dl dd.error{
 .toastContainer {
     margin-bottom: 25px;
     border-radius: 8px;
-    background: #2c0c0f;
+    background: rgba(255, 69, 88, 0.65);
     padding: 8px 16px 8px 16px;
     box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
