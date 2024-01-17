@@ -1,7 +1,7 @@
 /* Responsive Navbar */
 .wrapper {
     background: var(--header-bg);
-    border-bottom: 1px solid rgb(42, 42, 42);
+    border-bottom: 1px solid var(--dark);
     position: fixed;
     top:0;
     left:0;
@@ -50,7 +50,7 @@ nav .content .links
 }
 .content .logo a .appVersion{
     font-size: 12px;
-    color: var(--gray);
+    color: var(--branded-dark);
     align-self: end;
 }
 .content .links li,
@@ -69,7 +69,7 @@ nav .content .links
     font-size: 14px;
     line-height: 120%;
     text-transform: capitalize;
-    color: var(--mantle-off-white);
+    color: var(--branded-dark);
     padding: 9px 17px;
     border-radius: 5px;
     cursor: pointer;
@@ -80,7 +80,8 @@ nav .content .links
 .right-menu .links li a:not([href]):not([class]),
 .right-menu .links li a:not([href]):not([class]):hover
 {
-    color: #fff;
+    color: var(--branded-dark);
+    font-weight: 500;
     white-space: nowrap;
 }
 .content .links li .disable,
@@ -221,10 +222,10 @@ nav .content .links
     transform: translateY(-50%);
     line-height: 60px;
     width: 70px;
-    background: #171c24;
+    background: transparent;
     border: none;
     outline: none;
-    color: #fff;
+    color: var(--card-color);
     font-size: 20px;
     cursor: pointer;
 }
@@ -238,8 +239,8 @@ nav .content .links
 .right-menu .links ul
 {
     position: absolute;
-    background: var(--popup-bg);
-    border: 2px solid var(--popup-stroke);
+    background: var(--header-bg);
+    border: 2px solid var(--inactive-gray);
     border-radius: 10px;
     top: 90px;
     z-index: -1;
@@ -289,7 +290,7 @@ nav .content .links
 .content .links ul li a:hover,
 .right-menu .links ul li a:hover
 {
-    background: var(--popup-stroke);
+    background: var(--disable-yellow);
 }
 .content .links ul li:not(:last-child)::before {
     content: '';
@@ -364,7 +365,7 @@ nav .content .links
     nav .content .links {
         display: block;
         position: fixed;
-        background: #090909;
+        background: var(--header-bg);
         height: -webkit-fill-available;
         width: 100%;
         top: 71px;
@@ -698,7 +699,7 @@ nav .content .links
     font-size: 16px;
     line-height: 19px;
     text-transform: capitalize;
-    color: var(--mantle-off-white);
+    color: var(--branded-dark);
 }
 .content .links ul li.mainMenuItem a:hover{
     background-color: var(--popup-bg);
