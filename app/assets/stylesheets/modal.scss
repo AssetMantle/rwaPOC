@@ -42,15 +42,16 @@
 
 #modal-content {
   padding: 32px;
-  background-color: #21211E;
+  background-color: var(--inactive-gray);
   border-radius: 10px;
-  border: 2px solid #282826;
+  border: 2px solid var(--gray);
   height: fit-content;
+  backdrop-filter: blur(10px) contrast(0) saturate(0);
 }
 
 .btn-close {
   background: none;
-  color: #ffc033 !important;
+  color: var(--dark) !important;
   font-size: 45px;
   line-height: 0px;
   box-shadow: none !important;
@@ -70,7 +71,7 @@
 }
 
 .sub-heading {
-  @include setFont(var(--font-type-2), normal, 400, 18px, 22px, var(--inactive-gray));
+  @include setFont(var(--font-type-2), normal, 400, 18px, 22px, var(--card-color));
   margin-bottom: 32px;
 }
 
@@ -121,7 +122,7 @@
 }
 
 .header-with-icon .form-sub-title {
-  @include setFont(var(--font-type-2), normal, 400, 14px, 22px, var(--text-medium));
+  @include setFont(var(--font-type-2), normal, 400, 14px, 22px, var(--card-color));
 }
 
 .header-with-icon .form-top .back-button-icon {
@@ -140,7 +141,7 @@
 
 // Sign Up
 .termsConditionMessage {
-  @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--mantle-off-white));
+  @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--card-color));
   margin-left: 6px;
 
   label {
@@ -149,7 +150,7 @@
 }
 
 .footerMessage {
-  @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--inactive-gray));
+  @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
   text-align: left;
 
   span {
@@ -167,12 +168,12 @@
 
 // Terms & Conditions
 .termsConditionSubTitle {
-  @include setFont(var(--font-type-2), normal, 400, 18px, 22px, var(--inactive-gray));
+  @include setFont(var(--font-type-2), normal, 400, 18px, 22px, var(--card-color));
 }
 
 // Recovery Phrase
 .form-copy-item {
-  @include setFont(var(--font-type-2), normal, 700, 14px, 22px, var(--inactive-gray));
+  @include setFont(var(--font-type-2), normal, 700, 14px, 22px, var(--card-color));
   text-transform: capitalize;
 }
 
@@ -186,16 +187,16 @@
 }
 
 .form-seed-box-list .form-seed-box .form-seed-box-number {
-  @include setFont(var(--font-type-2), normal, 500, 12px, 14px, var(--mantle-off-white));
+  @include setFont(var(--font-type-2), normal, 500, 12px, 14px, var(--card-color));
   margin-left: 5px;
 }
 
 .form-seed-box-list .form-seed-box .form-seed-box-phrase {
-  @include setFont(var(--font-type-2), normal, 400, 14px, 14px, var(--mantle-off-white));
+  @include setFont(var(--font-type-2), normal, 400, 14px, 14px, var(--card-color));
   text-align: center;
   background: transparent;
   width: 100%;
-  border: 1px solid var(--inactive-gray);
+  border: 1px solid var(--card-color);
   box-sizing: border-box;
   border-radius: 8px;
   padding: 9px 0;
@@ -217,7 +218,7 @@
 }
 
 .form-seed-box-list .form-seed-box .form-seed-box-phrase input {
-  @include setFont(var(--font-type-2), normal, 400, 16px, 14px, var(--mantle-off-white));
+  @include setFont(var(--font-type-2), normal, 400, 16px, 14px, var(--card-color));
   height: 100%;
   width: 100%;
   border-radius: 8px;
@@ -240,12 +241,12 @@
 }
 
 .form-information-message .form-information-text {
-  @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--mantle-off-white));
+  @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
 }
 
 /* Form Heading */
 .form-heading {
-  @include setFont(var(--font-type-2), normal, 600, 18px, 22px, var(--inactive-gray));
+  @include setFont(var(--font-type-2), normal, 600, 18px, 22px, var(--card-color));
   margin-top: 32px;
 }
 
@@ -255,7 +256,7 @@
 }
 
 .form-bullet-list ul {
-  @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--inactive-gray));
+  @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
   list-style: disc;
 }
 
@@ -275,7 +276,7 @@
 }
 
 .header-success .form-success-message-sub-text {
-  @include setFont(var(--font-type-2), normal, 400, 14px, 24px, var(--text-medium));
+  @include setFont(var(--font-type-2), normal, 400, 14px, 24px, var(--card-dark));
 }
 
 // Forgot Password
@@ -293,16 +294,16 @@
 .formSeedBoxList {
   .formSeedBox {
     .form-seed-box-number {
-      @include setFont(var(--font-type-2), normal, 500, 12px, 14px, var(--mantle-off-white));
+      @include setFont(var(--font-type-2), normal, 500, 12px, 14px, var(--card-color));
       margin-left: 5px;
     }
 
     .form-seed-box-phrase {
-      @include setFont(var(--font-type-2), normal, 400, 14px, 14px, var(--mantle-off-white));
+      @include setFont(var(--font-type-2), normal, 400, 14px, 14px, var(--card-color));
       text-align: center;
       background: transparent;
       width: 100%;
-      border: 1px solid var(--inactive-gray);
+      border: 1px solid var(--card-color);
       box-sizing: border-box;
       border-radius: 8px;
       padding: 9px 0;
@@ -319,7 +320,7 @@
       }
 
       input {
-        @include setFont(var(--font-type-2), normal, 400, 16px, 14px, var(--mantle-off-white));
+        @include setFont(var(--font-type-2), normal, 400, 16px, 14px, var(--card-color));
         height: 100%;
         width: 100%;
         border-radius: 8px;
@@ -359,7 +360,7 @@
       width: 8px;
       aspect-ratio: 1;
       border-radius: 50%;
-      background-color: var(--button-text);
+      background-color: var(--branded-dark);
       position: absolute;
       top: 50%;
       left: 0;
@@ -372,7 +373,7 @@
       width: 8px;
       aspect-ratio: 1;
       border-radius: 50%;
-      background-color: var(--button-text);
+      background-color: var(--branded-dark);
       position: absolute;
       top: 50%;
       right: 0;
@@ -393,7 +394,7 @@
       background-color: var(--popup-bg);
       position: relative;
       border-radius: 50%;
-      box-shadow: 0 0 0 2px var(--icon-white);
+      box-shadow: 0 0 0 2px var(--branded-dark);
 
       &.active {
         background-color: var(--default);
@@ -405,8 +406,8 @@
       }
 
       &.visited {
-        background-color: var(--icon-white);
-        box-shadow: 0 0 0 3px var(--icon-white);
+        background-color: var(--branded-dark);
+        box-shadow: 0 0 0 3px var(--branded-dark);
 
         span {
           color: var(--inactive-gray);
@@ -431,7 +432,7 @@
   .singleProperty {
     .propertyHeaderContainer {
       .propertyHeading {
-        @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--inactive-gray));
+        @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--card-color));
         text-transform: capitalize;
       }
       .propertyEdit{
@@ -443,7 +444,7 @@
       display: none;
 
       .propertyBox {
-        background-color: var(--header-bg);
+        background-color: var(--gray);
         border-radius: 16px;
         padding: 12px 20px;
         margin-top: 20px;
@@ -453,7 +454,7 @@
         }
 
         .propertyTitle {
-          @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--inactive-gray));
+          @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--card-color));
           text-transform: capitalize;
         }
 
@@ -467,7 +468,7 @@
             display: flex;
             align-items: center;
             justify-content: end;
-            @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--inactive-gray));
+            @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
           }
 
           .propertyBoxValue {
@@ -491,7 +492,7 @@
   .singlePropertyContainer{
     .addPropertyHeader{
       .title{
-        @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--inactive-gray));
+        @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--card-color));
         text-transform: capitalize;
       }
       i{
@@ -508,7 +509,7 @@
         .singleOption{
           height: 30px;
           .optionTitle{
-            @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--inactive-gray));
+            @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
             text-transform: capitalize;
           }
           .options{
@@ -589,7 +590,7 @@
       .singleProperty {
         .propertyHeaderContainer {
           .propertyHeading {
-            @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--inactive-gray));
+            @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--card-color));
             text-transform: capitalize;
           }
         }
@@ -598,7 +599,7 @@
           display: block;
 
           .propertyBox {
-            background-color: var(--header-bg);
+            background-color: var(--gray);
             border-radius: 16px;
             padding: 12px 20px;
             margin-top: 20px;
@@ -608,7 +609,7 @@
             }
 
             .propertyTitle {
-              @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--inactive-gray));
+              @include setFont(var(--font-type-2), normal, 600, 16px, 19px, var(--card-color));
               text-transform: capitalize;
             }
 
@@ -622,7 +623,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: end;
-                @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--inactive-gray));
+                @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
               }
 
               .propertyBoxValue {
@@ -695,7 +696,7 @@
 // Create NFT
 .createNft{
   .createNftSelectCollection{
-    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--inactive-gray));
+    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
     margin-bottom: 4px;
   }
 }
@@ -706,14 +707,14 @@
   }
   .content{
     label{
-      @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--inactive-gray));
+      @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
     }
     ul{
       display: flex;
       flex-wrap: wrap;
       padding: calc(var(--size-bezel) * 2) 12px;
       border-radius: 8px;
-      border: 1px solid var(--inactive-gray);
+      border: 1px solid var(--card-color);
       li{
         @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--dark));
         margin: 6px 6px;
@@ -732,7 +733,7 @@
       }
       input{
         background-color: transparent;
-        @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--mantle-off-white));
+        @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
         border: none;
         outline: none;
         padding: calc(var(--size-bezel) * 1.5) 12px;
@@ -741,7 +742,7 @@
     }
   }
   .details{
-    @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--mantle-off-white));
+    @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
   }
 }
 #modalBackButton{
@@ -758,16 +759,16 @@
 }
 .fieldContainer{
   label{
-    @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--inactive-gray));
+    @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
   }
 }
 
 .randomNFTSaleField{
   label{
-    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--inactive-gray));
+    @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--card-color));
   }
   input{
-    @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--mantle-off-white));
+    @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
     height: 36px;
     box-sizing: border-box;
     display: block;
@@ -782,13 +783,13 @@
     &:focus{
       border-color: var(--dark);
       background-color: transparent;
-      color: var(--mantle-off-white);
+      color: var(--card-color);
       +.input-group-text{
         border-color: var(--dark);
       }
     }
     &::placeholder{
-      color: var(--inactive-gray);
+      color: var(--gray);
     }
   }
   .input-group-text{
@@ -796,7 +797,7 @@
     height: 36px;
     padding: calc(var(--size-bezel) * 2) 12px;
     background-color: var(--card-dark);
-    border-color: var(--inactive-gray);
+    border-color: var(--gray);
   }
 }
 
@@ -824,7 +825,7 @@
       .singleOption{
         height: 30px;
         .optionTitle{
-          @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--inactive-gray));
+          @include setFont(var(--font-type-2), normal, 700, 14px, 17px, var(--gray));
           text-transform: capitalize;
         }
         .options{
