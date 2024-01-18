@@ -524,7 +524,7 @@
     border-bottom: none;
 
     .nav-link{
-      @include setFont(var(--font-type-1), normal, 500, 14px, 17px, var(--gray));
+      @include setFont(var(--font-type-1), normal, 500, 14px, 17px, var(--disable));
       &.active{
         @include setFont(var(--font-type-1), normal, 700, 14px, 17px, var(--default));
       }
@@ -1155,9 +1155,17 @@ body.modal-open{
       }
       .nftCardSeparator{
         height: 2px;
-        width: calc(100% + 32px);
-        background-color: #21211E;
-        margin: 16px -16px 12px -16px;
+        width: calc(100%);
+        background-color: var(--gray);
+        //margin: 16px -16px 12px -16px;
+      }
+      .nftPriceButton{
+        font-size: 18px;
+        font-weight: 600;
+        & > span{
+          font-size: 12px;
+          font-weight: 500;
+        }
       }
     }
     .fractionelisedBadge{
@@ -1171,7 +1179,7 @@ body.modal-open{
         align-items: center;
         gap:6px;
         position: absolute;
-        left: 16px;
+        right: 12px;
         top: 16px;
         z-index: 99;
         i{

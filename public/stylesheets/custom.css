@@ -4,7 +4,8 @@
     --text-medium: rgba(255, 253, 250, 0.75);
     --mantle-off-white: #FFFDFA;
     --button-text: #2C2C2C;
-    --disable-yellow: #624D19;
+    --branded-dark: #0D0A03;
+    --disable-yellow: #4E6A8B;
     --card-color: #252525;
     --line: #2E2E2E;
     --line-2: #383838;
@@ -12,16 +13,23 @@
     --error: #E44651;
     --connected: #148919;
     --tooltip-bg: #424242;
-    --header-bg: rgba(4, 4, 4);
+    --header-bg: #FFFDFA;
     --popup-bg: #21211E;
     --popup-stroke: #282826;
-    --radial: radial-gradient(50% 50% at 50% 50%, #FFC640 47.4%, #F2AF13 100%);
-    --dark: #F2AF13;
-    --default: #FFC640;
+    --radial: radial-gradient(50% 50% at 50% 50%, #3f96fd 47.4%, #1373E6 100%);
+    --dark: #1373E6;
+    --default: #3f96fd;
     --gray: #B0B0B0;
     --card-dark: #030301;
     --accent-blue: #6FB4B5;
-    --background-dark: #111111;
+    --background-dark: #E6E6E6;
+
+    /* JS Input Validation colors */
+
+    --not-required-empty-disable-label: var(--button-text);
+    --not-required-empty-disable-input: var(--card-color);
+    --not-required-empty-disable-entering-label: var(--card-color);
+
     --font-type-1: 'Work Sans';
     --font-type-2: 'Lato';
     --size-bezel: .5rem;
@@ -66,7 +74,7 @@ body{
     height: 5px;
     width: 5px;
     height: 5px;
-    background-color: var(--line);
+    background-color: var(--text-medium);
     border-radius: 5px;
 }
 
@@ -268,7 +276,7 @@ body{
     background-position: 3px 2px;
 }
 .error-info .error-icon.active + .error-text{
-    color: var(--mantle-off-white);
+    color: var(--card-color);
 }
 .available-username{
     font-size: 16px;
