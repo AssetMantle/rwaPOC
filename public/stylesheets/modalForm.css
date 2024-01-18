@@ -937,7 +937,7 @@ dl dd.error{
     font-weight: 500;
     font-size: 12px;
     line-height: 14px;
-    color: var(--inactive-gray);
+    color: var(--button-text);
 }
 
 /* Custom Select */
@@ -984,8 +984,8 @@ dl dd.error{
     top: 50%;
     right: 25px;
     margin-top: -3px;
-    border-bottom: 1px solid var(--mantle-off-white);
-    border-right: 1px solid var(--mantle-off-white);
+    border-bottom: 1px solid var(--card-color);
+    border-right: 1px solid var(--card-color);
     transform: rotate(45deg) translateY(-50%);
     transition: all .4s ease-in-out;
     transform-origin: 50% 0;
@@ -1035,7 +1035,7 @@ dl dd.error{
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
-    color: var(--text-medium);
+    color: var(--button-text);
 }
 .custom-option:first-of-type {
     padding-top: 12px;
@@ -1051,7 +1051,7 @@ dl dd.error{
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
-    color: var(--inactive-gray);
+    color: var(--button-text);
 }
 .toggleButton {
     -webkit-appearance: none;
@@ -1066,7 +1066,7 @@ dl dd.error{
     width: 40px;
     height: 18px;
     display: inline-block;
-    background: var(--icon-white);
+    background: var(--card-color);
     border-radius: 18px;
     clear: both;
 }
@@ -1079,7 +1079,7 @@ dl dd.error{
     left: 3px;
     top: 3px;
     border-radius: 50%;
-    background: var(--card-color);
+    background: var(--icon-white);
 }
 .toggleButton:checked:before {
     left: 25px;
