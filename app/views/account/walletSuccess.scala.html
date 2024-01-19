@@ -11,14 +11,14 @@
     <div class="form-information-text">@Messages(constants.View.CREATE_WALLET_SUCCESS_INFO)</div>
 </div>
 <div class="horizontal-align">
-    @defining(s"https://twitter.com/intent/tweet?text=I just claimed my username ${username} on MantlePlace @AssetMantle $$MNTL. Claim yours at &url=https://marketplace.assetmantle.one&hashtags=DID&hashtags=InterNFT") { uri =>
-        <a href='@uri' target="_blank">
-            <button class="form-secondary-button">
-                <span>
-                    <img src="@routes.Assets.versioned("images/icon/twitterYellow.png")" class="icon"/>
-                </span>
-            </button>
-        </a>
-    }
+@*    @defining(s"https://twitter.com/intent/tweet?text=I just claimed my username ${username} on MantlePlace @AssetMantle $$MNTL. Claim yours at &url=https://marketplace.assetmantle.one&hashtags=DID&hashtags=InterNFT") { uri =>*@
+@*        <a href='@uri' target="_blank">*@
+@*            <button class="form-secondary-button">*@
+@*                <span>*@
+@*                    <img src="@routes.Assets.versioned("images/icon/twitterYellow.png")" class="icon"/>*@
+@*                </span>*@
+@*            </button>*@
+@*        </a>*@
+@*    }*@
     @commonModalPrimaryButton(constants.View.SIGN_IN, constants.Form.SIGN_IN_WITH_CALLBACK.get)
 </div>

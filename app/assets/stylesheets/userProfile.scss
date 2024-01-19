@@ -436,7 +436,7 @@
     path {
       fill: none;
       stroke-width: 2;
-      stroke: var(--icon-white);
+      stroke: var(--card-color);
     }
   }
   &.clicked {
@@ -529,7 +529,7 @@
         }
       }
       .contentBody{
-        background-color: var(--background-dark);
+        background-color: #F3F2F0;
         width: 100%;
         //height: fit-content;
         height: 500px;
@@ -1120,16 +1120,16 @@
       }
     }
     .profileName{
-      @include setFont(var(--font-type-2), normal, 600, 18px, 22px, var(--mantle-off-white));
+      @include setFont(var(--font-type-2), normal, 600, 18px, 22px, var(--card-color));
     }
   }
   .userAddressBox {
-    background-color: var(--card-dark);
+    background-color: var(--mantle-off-white);
     border-radius: 8px;
     line-height: 0;
 
     .userAddressData {
-      @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--mantle-off-white));
+      @include setFont(var(--font-type-2), normal, 400, 14px, 17px, var(--card-color));
       word-break: break-word;
     }
 
@@ -1146,15 +1146,15 @@
     margin-top: 12px;
   }
   .profileStatsBox{
-    background-color: var(--card-dark);
+    background-color: var(--mantle-off-white);
     padding: 16px;
     border-radius: 10px;
     .statsTitle{
-      @include setFont(var(--font-type-2), normal, 400, 12px, 14px, var(--gray));
+      @include setFont(var(--font-type-2), normal, 600, 12px, 14px, var(--button-test));
       word-break: break-word;
     }
     .statsValue{
-      @include setFont(var(--font-type-1), normal, 400, 28px, 34px, var(--mantle-off-white));
+      @include setFont(var(--font-type-1), normal, 500, 28px, 34px, var(--card-color));
     }
   }
 }
