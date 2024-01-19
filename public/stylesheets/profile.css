@@ -562,6 +562,14 @@ profileContainer .item-sticky .profile-card{
     margin-top: 16px;
     margin-bottom: 16px;
 }
+.nft-list .card .nft-separator{
+    height: 2px;
+    width: calc(100% + 32px);
+    background-color: var(--popup-bg);
+    margin-left: -16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
 .nft-list .card .nft-name{
     font-family: var(--font-type-2);
     font-style: normal;
@@ -781,7 +789,7 @@ profileContainer .item-sticky .profile-card{
 .createNFTCard .card-img img{
     width: 94px !important;
     height: 68px !important;
-    margin-right: -12px !important;
+    transform: translateX(12px);
 }
 .createNFTCard .card-img .label{
     font-family: var(--font-type-2);
