@@ -110,10 +110,11 @@
 .nftPreviewContainer{
   width: 100%;
   height: fit-content;
-  //background-color: var(--card-color);
+  background-color: var(--mantle-off-white);
   border-radius: 20px;
   overflow: hidden;
-  //padding: 20px;
+  padding: 16px 20px 20px;
+  margin-top: 20px;
   .leftOptions{
     li{
       @include setFont(var(--font-type-1), normal, 500, 14px, 17px, var(--button-text));
@@ -132,7 +133,7 @@
     }
   }
   .nftImagePreview{
-    //background: var(--card-dark);
+    //background: var(--mantle-off-white);
     border-radius: 10px;
     //padding: 20px;
     div{
@@ -422,6 +423,13 @@
   }
 }
 
+// Trade table
+.tradeSectionContainer{
+  padding: 20px;
+  margin-top: 20px;
+  background: var(--mantle-off-white);
+  border-radius: 20px;
+}
 
 // Loader
 .loading {
@@ -509,7 +517,7 @@
 .centerContainer {
   width: 100%;
   height: fit-content;
-  background-color: var(--inactive-gray);
+  //background-color: var(--inactive-gray);
   border-radius: 20px;
 
   .centerCard {
